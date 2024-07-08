@@ -1,0 +1,90 @@
+<%= render @tree %>
+<div style="padding: 10px;">
+
+
+<h1><%= @tree.name %></h1>
+
+<!-- Other tree details -->
+
+
+
+<button type="button" class="btn btn-outline-primary"><%= link_to 'Add Assessment Item', new_tree_assessment_item_path(@tree) %> </button>
+
+<%= link_to 'Marking Page',tree_marking_path(@tree), class: 'btn btn-primary' %>
+
+
+<div class="d-grid gap-2">
+    <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    <strong>Add a branch</strong>
+  </button>
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add a branch</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <%= form_with(model: [@tree, @branch], local: true) do |form| %>
+            <% if @branch.errors.any? %>
+              <div style="color: red">
+                <h2><%= pluralize(@branch.errors.count, "error") %> prohibited this branch from being saved:</h2>
+                <ul>
+                  <% @branch.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+            
+            <div class="mb-3">
+              <label for="formGroupExampleInput" class="form-label"><%= form.label :name, style: "display: block" %>
+              </label>
+            <input type="text" class="form-control" id=<%= form.text_field :name %>  
+            </div>    
+
+            <div class="mb-3">
+              <label for="formGroupExampleInput2" class="form-label"><%= form.label :description, style: "display: block" %>
+              </label>
+            <input type="text" class="form-control" id=<%= form.text_area :description %>  
+            </div>
+            <div>
+              <%= form.hidden_field :tree_id, value: @tree.id %>
+            </div>
+            <div>
+              <%= form.submit %>
+            </div>
+          <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        
+        </div>
+      </div>
+    </div>
+</div>
+
+
+  <h5>Existing Branches</h5>
+
+  <% @tree.branches.each do |branch| %>
+    <%= render branch %>
+  <% end %>
+  </div>
+
+</div>
+<br>
+  <div>
+  <%= render 'tree_blossoms'%>
+  </div>
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,35 @@
+<p style="color: green"><%= notice %></p>
+
+
+
+<button type="button" class="btn btn-outline-primary"><%= link_to "New Tree", new_tree_path %> </button>
+<button type="button" class="btn btn-outline-primary">
+  <%= link_to "Add New Student", teacher_new_student_path(current_teacher) %>
+</button>
+
+
+
+
+
+
+<div class="container">
+  <h1>Trees</h1>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <% @trees.each do |tree| %>
+            <%= render tree %>
+    </div>
+      <div class="col-6">
+        <button type="button" class="btn btn-outline-primary"><%= link_to "Go to tree", tree %></button>
+        
+      </div>
+          <% end %>
+
+<% if teacher_signed_in? %>
+  <!-- User is logged in -->
+  <p>Welcome, <%= current_teacher.email %></p>
+<% else %>
+  <!-- User is not logged in -->
+  <p>Please sign in to continue</p>
+<% end %>

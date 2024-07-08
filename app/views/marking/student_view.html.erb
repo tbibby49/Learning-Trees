@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student View</title>
+  <style>
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .branches-container {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+    }
+    .branch-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin: 10px;
+    }
+    .sphere {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid gold;
+      background-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: gold;
+      font-size: 16px;
+      margin: 5px;
+      position: relative;
+    }
+    .sphere.gold {
+      border: 7px solid gold;
+    }
+    .sphere.glow {
+      background-color: gold;
+      box-shadow: 0 0 30px gold;
+    }
+    .sphere.pulse {
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    .tooltip {
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: #fff;
+      padding: 5px;
+      border-radius: 5px;
+      white-space: nowrap;
+      z-index: 10;
+      margin-bottom: 5px;
+      font-size: 12px;
+    }
+    .sphere:hover .tooltip {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Tree: <%= @tree.name %></h1>
+    <%= form_tag({ controller: 'marking', action: 'student_view', tree_id: @tree.id }, method: :get) do %>
+      <div class="form-group">
+        <%= label_tag 'student_id', 'Select Student:' %>
+        <%= select_tag 'student_id', options_for_select(@students.map { |s| [s.email, s.id] }, params[:student_id]), class: 'form-control' %>
+      </div>
+      <div class="form-group">
+        <%= label_tag 'assessment_item_id', 'Select Assessment Item:' %>
+        <%= select_tag 'assessment_item_id', options_for_select(@assessment_items.map { |ai| [ai.name, ai.id] }, params[:assessment_item_id]), class: 'form-control' %>
+      </div>
+      <%= submit_tag 'Submit', class: 'btn btn-primary' %>
+    <% end %>
+
+    <%= render 'display_tree' %>
+
+    <div class="branches-container">
+      <% @branches.each do |branch| %>
+        <div class="branch-column">
+          <h2><%= branch.name %></h2>
+          <% branch.blossoms.each do |blossom| %>
+            <%= stage = @blossom_stages[blossom.id] %>
+            <% sphere_class = 'sphere' %>
+            <% if stage == 'Partially Demonstrated' %>
+              <% sphere_class += ' gold' %>
+            <% elsif stage == 'Fully Demonstrated' %>
+              <% sphere_class += ' glow' %>
+            <% end %>
+            <div class="<%= sphere_class %>">
+              <%= blossom.row %>
+              <div class="tooltip"><%= blossom.name %></div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</body>
+</html>
+

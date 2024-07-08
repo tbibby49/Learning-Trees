@@ -1,0 +1,29 @@
+<h2>New Assessment Item</h2>
+
+<%= form_for @assessment_item, url: assessment_items_path(tree_id: @tree.id), html: { multipart: true } do |f| %>
+  <%= f.hidden_field :tree_id, value: @tree.id %>
+  
+  <div class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, class: 'form-control', required: true %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :document %>
+    <%= f.file_field :document, class: 'form-control-file' %>
+  </div>
+
+  <%= f.submit 'Create Assessment Item', class: 'btn btn-primary' %>
+<% end %>
+
+<h2>Assessment Items</h2>
+<ul>
+  <% @assessment_items.each do |assessment_item| %>
+    <li>
+      <%= assessment_item.name %>
+      <%= button_to 'Delete', tree_assessment_item_path(assessment_item, tree_id: @tree.id), method: :delete, data: { confirm: 'Are you sure?' } %>
+
+    </li>
+  <% end %>
+</ul>
+

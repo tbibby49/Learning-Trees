@@ -1,0 +1,79 @@
+<!-- Secondary Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top navbar-secondary" style="top: 56px;">
+    <div class="container-fluid">
+      <div class="row w-100">
+        <div class="col-12">
+          <h1 style="display: inline-block; margin-right: 20px;">Marking Page</h1>
+          <div style="display: inline-block;">
+            <%= form_tag(tree_marking_path(@tree), method: :post, style: 'display: inline-block;') do %>
+              <div class="form-group" style="display: inline-block; margin-right: 20px;">
+                <%= label_tag 'student_id', 'Select Student:', style: 'display: block;' %>
+                <%= select_tag 'student_id', options_for_select(@students.map { |s| [s.email, s.id] }), class: 'form-control', style: 'display: inline-block; width: auto;', id: 'student_id' %>
+              </div>
+
+              <div class="form-group" style="display: inline-block; margin-right: 20px;">
+                <%= label_tag 'assessment_item_id', 'Select Assessment Item:', style: 'display: block;' %>
+                <%= select_tag 'assessment_item_id', options_for_select(@assessment_items.map { |ai| [ai.name, ai.id] }), class: 'form-control', style: 'display: inline-block; width: auto;', id: 'assessment_item_id' %>
+              </div>
+
+              <%= submit_tag 'Submit', class: 'btn btn-secondary', style: 'display: inline-block;', id: 'submit_button' %>
+            <% end %>
+          </div>
+        </div>
+        <div class="col-12 mt-2">
+          <% @branches.each do |branch| %>
+            <button type="button" class="btn btn-primary me-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvas<%= branch.id %>" onclick="saveBranch(<%= branch.id %>)">
+              <%= branch.name %> Blossoms
+            </button>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container mt-5 pt-5">
+    <!-- Offcanvas for each branch -->
+    <% @branches.each do |branch| %>
+      <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas<%= branch.id %>" aria-labelledby="offcanvas<%= branch.id %>Label">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvas<%= branch.id %>Label"><%= branch.name %> Blossoms</h5>
+          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <% branch.blossoms.each do |blossom| %>
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title"><%= blossom.name %></h5>
+                <p class="card-text"><%= blossom.description %></p>
+                <div class="form-check form-check-inline">
+                  <%= radio_button_tag "blossom_#{blossom.id}_stage", 'Not Evident', false, class: 'form-check-input', data: { blossom_id: blossom.id } %>
+                  <%= label_tag "blossom_#{blossom.id}_stage_not_evident", 'Not Evident', class: 'form-check-label' %>
+                </div>
+                <div class="form-check form-check-inline">
+                  <%= radio_button_tag "blossom_#{blossom.id}_stage", 'Partially Demonstrated', false, class: 'form-check-input', data: { blossom_id: blossom.id } %>
+                  <%= label_tag "blossom_#{blossom.id}_stage_partially_demonstrated", 'Partially Demonstrated', class: 'form-check-label' %>
+                </div>
+                <div class="form-check form-check-inline">
+                  <%= radio_button_tag "blossom_#{blossom.id}_stage", 'Fully Demonstrated', false, class: 'form-check-input', data: { blossom_id: blossom.id } %>
+                  <%= label_tag "blossom_#{blossom.id}_stage_fully_demonstrated", 'Fully Demonstrated', class: 'form-check-label' %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Display Blossom Stage Values -->
+ <% if @blossom_assessments.nil? %>
+  <p>No blossom assessments found.</p>
+  <% else %>
+  <h2>Blossom Stage Values</h2>
+  <ul>
+    <% @blossom_assessments.each do |assessment| %>
+      <li><%= "#{assessment.blossom.name}: #{assessment.stage}" %></li>
+    <% end %>
+  </ul>
+  <% end %>

@@ -1,0 +1,240 @@
+
+
+<p style="color: green"><%= notice %></p>
+<div>
+<%= render @branch %>
+</div>
+
+<!-- Add a form to create a new blossom -->
+<div class = "container">
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Add a blossom
+  </button>
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add a blossom</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <%= form_with(model: [@tree, @branch, Blossom.new]) do |form| %>
+              <div>
+                  <%= form.label :name %>
+                  <%= form.text_field :name %>
+              </div>
+              
+              <div>
+                  <%= form.label :description %>
+                  <%= form.text_area :description %>
+              </div>
+    
+    <%= form.submit "Create Blossom", class: "btn btn-primary" %>
+  <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="tree-id" content="<%= @tree.id %>">
+    <meta name="branch-id" content="<%= @branch.id %>">
+    <title>Blossom Spheres</title>
+    <!-- Bootstrap CSS -->
+   <style>
+        .sphere {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: 2px solid gold;
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: gold;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            position: relative;
+        }
+        .tooltip-inner {
+            white-space: nowrap;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .card {
+            z-index: 9999; /* Ensure the card appears above other elements */
+            position: absolute; /* Use absolute positioning */
+            width: 16rem;
+            display: none;
+        }
+        .card-title {
+            font-weight: bold;
+        }
+
+         canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 998;
+            pointer-events: none;
+        }
+
+        .card.blossom {
+            border: none; /* Remove border */
+            padding: 0; /* Adjust padding */
+            
+            /* Any other necessary adjustments */
+        }
+      
+    </style>
+</head>
+  
+
+
+<div class="container">
+    <p style="color: green"><%= notice %></p>
+    <div class="row">
+        <!-- Left column for the 'add blossom' link -->
+        <div class="col-md-1">
+            <strong>blossoms</strong>
+            <div id="blossoms-container" class="mt-4">
+                <% @branch.blossoms.each do |blossom| %>
+                    <div class="card blossom" id="<%= dom_id(blossom) %>" data-row="<%= blossom.row %>" data-column="<%= blossom.column %>">
+                        <%= render blossom %>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+
+    <div id="blossom-card" class="card position-absolute" style="width: 18rem; display: none;">
+      <div class="card-body">
+        <h5 id="card-title" class="card-title"></h5>
+        <p id="card-description" class="card-text"></p>
+        <p id="card-position" class="card-text"></p>
+      </div>
+    </div>
+
+
+<!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    
+    <script>
+        function showCard(event) {
+            const sphere = event.target;
+            const card = document.getElementById('blossom-card');
+
+            const name = sphere.getAttribute('data-blossom-name');
+            const description = sphere.getAttribute('data-blossom-description');
+            const row = sphere.getAttribute('data-blossom-row');
+            const column = sphere.getAttribute('data-blossom-column');
+
+            const cardTitle = document.getElementById('card-title');
+            const cardDescription = document.getElementById('card-description');
+            const cardPosition = document.getElementById('card-position');
+
+            cardTitle.textContent = name;
+            cardDescription.textContent = description;
+            cardPosition.textContent = `Row: ${row} Column: ${column}`;
+
+            const rect = sphere.getBoundingClientRect();
+            card.style.top = `${rect.top + window.scrollY + sphere.offsetHeight}px`;
+            card.style.left = `${rect.left + window.scrollX}px`;
+            card.style.display = 'block';
+        }
+
+        function hideCard(event) {
+            const card = document.getElementById('blossom-card');
+            card.style.display = 'none';
+        }
+
+        $(document).ready(function() {
+            $('[data-toggle="tooltip"]').tooltip({
+                html: true
+            });
+        });
+    </script>
+
+<div class="container text-center">
+<!-- Right column for the grid -->
+        <div class="col-md-11">
+            <div class="container" id="grid-container">
+                <%= render 'grid'%>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Double click handling -->
+<style>
+  .sphere {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 2px solid gold;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 0 2px black;
+    position: relative;
+    margin-right: 10px;
+    z-index: 999;
+  }
+  .tooltip-inner {
+    white-space: nowrap;
+  }
+  .context-menu {
+    display: none;
+    position: absolute;
+    z-index: 2000;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 10px;
+    list-style: none;
+  }
+  .context-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  .context-menu li:hover {
+    background-color: #eee;
+  }
+</style>
+<script>
+function handleDoubleClick(event) {
+    const blossom = event.currentTarget;
+    const blossomId = blossom.id.replace('blossom_', '');
+
+    // Retrieve tree and branch IDs from meta tags
+    const treeId = document.querySelector('meta[name="tree-id"]').getAttribute('content');
+    const branchId = document.querySelector('meta[name="branch-id"]').getAttribute('content');
+
+    // Construct the correct edit path
+    const editPath = `/trees/${treeId}/branches/${branchId}/blossoms/${blossomId}/edit`;
+    window.location.href = editPath;
+}
+
+// Add event listeners to blossoms
+document.querySelectorAll('.blossom').forEach(blossom => {
+    blossom.addEventListener('dblclick', handleDoubleClick);
+});
+</script>
+</body>
+
+
+</html>

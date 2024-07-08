@@ -1,0 +1,40 @@
+<% if @student && @assessment_item %>
+  <p>Student: <%= @student.name %></p>
+  <p>Assessment Item: <%= @assessment_item.name %></p>
+<% end %>
+
+<%= form_with url: update_stage_path, method: :post, remote: true, authenticity_token: true do |form| %>
+  <div class="form-group">
+    <%= form.hidden_field :student_id, value: @student.id %>
+    <%= form.hidden_field :assessment_item_id, value: @assessment_item.id %>
+    <%= form.hidden_field :blossom_id, value: params[:blossom_id] %> <!-- Ensure this field is present -->
+    <%= form.hidden_field :stage, value: params[:stage] %> <!-- Ensure this field is present -->
+  </div>
+
+  <% @branches.each do |branch| %>
+    <% branch.blossoms.each do |blossom| %>
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title"><%= blossom.name %></h5>
+          <p class="card-text"><%= blossom.description %></p>
+          <div class="form-check form-check-inline">
+            <%= radio_button_tag "blossom[#{blossom.id}][stage]", 'Not Evident', false, class: 'form-check-input' %>
+            <%= label_tag "blossom_#{blossom.id}_stage_not_evident", 'Not Evident', class: 'form-check-label' %>
+          </div>
+          <div class="form-check form-check-inline">
+            <%= radio_button_tag "blossom[#{blossom.id}][stage]", 'Partially Demonstrated', false, class: 'form-check-input' %>
+            <%= label_tag "blossom_#{blossom.id}_stage_partially_demonstrated", 'Partially Demonstrated', class: 'form-check-label' %>
+          </div>
+          <div class="form-check form-check-inline">
+            <%= radio_button_tag "blossom[#{blossom.id}][stage]", 'Fully Demonstrated', false, class: 'form-check-input' %>
+            <%= label_tag "blossom_#{blossom.id}_stage_fully_demonstrated", 'Fully Demonstrated', class: 'form-check-label' %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <div class="form-group">
+    <%= form.submit 'Save', class: 'btn btn-primary' %>
+  </div>
+<% end %>

@@ -1,0 +1,27 @@
+<div id="<%= dom_id(branch) %>">
+
+
+  <div class="list-group">
+  <a href="#collapse_<%= branch.id %>" class="list-group-item list-group-item-action" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapse_<%= branch.id %>">
+    <%= branch.name %>
+  </a>
+  <div class="collapse" id="collapse_<%= branch.id %>">
+    <div class="card card-body">
+      <strong>Description:</strong>
+      <%= branch.description %>
+      <br>
+      <% if branch.persisted? %>
+        <%= link_to "Edit name/description", edit_tree_branch_path(branch.tree, branch) %> 
+      <% end %>
+     
+      <% if branch.persisted? %>
+        <%= button_to "Destroy", tree_branch_path(branch.tree, branch), method: :delete %>
+      <% end %>
+
+       <% if branch.persisted? %>
+        <%= link_to "Create/Modify Branch", tree_branch_path(branch.tree, branch) %>
+      <% end %>
+
+    </div>
+  </div>
+</div>

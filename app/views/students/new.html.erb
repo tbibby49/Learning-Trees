@@ -1,0 +1,14 @@
+<h1>Add Student</h1>
+
+<%= form_for(Student.new, url: create_student_teacher_path(current_teacher)) do |f| %>
+  <%= f.label :email %>
+  <%= f.email_field :email, required: true %>
+
+  <%= f.label :password %>
+  <%= f.password_field :password, required: true %>
+
+  <%= f.label :password_confirmation %>
+  <%= f.password_field :password_confirmation, required: true %>
+
+  <%= f.submit 'Add Student', class: 'btn btn-primary' %>
+<% end %>

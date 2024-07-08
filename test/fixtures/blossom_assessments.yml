@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  student: one
+  assessment_item: one
+  blossom: one
+  stage: MyString
+
+two:
+  student: two
+  assessment_item: two
+  blossom: two
+  stage: MyString

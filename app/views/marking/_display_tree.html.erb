@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Display Student Tree Partial</title>
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+    }
+
+    .container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .tree-container {
+      position: relative;
+      width: 1200px; /* Adjust as needed */
+      height: 600px; /* Adjust as needed */
+      background-image: url('/assets/tree.jpg');
+      background-size: 120%; /* Ensure the image covers the entire container */
+      background-position: center; /* Center the image */
+      background-repeat: no-repeat; /* No repeat */
+      display: flex;
+      justify-content: center;
+      align-items: flex-end; /* Align blossoms to bottom of the container */
+      overflow: hidden; /* Ensure no overflow from absolutely positioned blossoms */
+      border: 2px solid #333; /* Border style */
+      box-sizing: border-box; /* Include border in the width and height */
+    }
+
+    .blossom {
+      width: 30px; /* Adjust as needed */
+      height: 30px; /* Adjust as needed */
+      background-color: transparent;
+      border-radius: 50%;
+      display: flex;
+      border: 4px solid gold;
+      color: gold;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+    }
+
+    .blossom.gold {
+      border: 8px solid gold;
+    }
+
+    .blossom.glow {
+      background-color: gold;
+      box-shadow: 0 0 10px gold;
+    }
+
+    .blossom.pulse {
+      animation: pulse 1s infinite;
+    }
+
+    .blossom-tooltip {
+      display: none;
+      position: absolute;
+      background-color: #333;
+      color: #fff;
+      padding: 5px;
+      border-radius: 5px;
+      white-space: normal;
+      z-index: 999;
+      width: 200px;
+    }
+
+    .blossom:hover .blossom-tooltip {
+      display: block;
+    }
+
+    .branch-line {
+      stroke: gray;
+      stroke-width: 10;
+      fill: none;
+    }
+
+    .branch-tooltip {
+      display: none;
+      position: absolute;
+      background-color: #333;
+      color: #fff;
+      padding: 5px;
+      border-radius: 5px;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .branch-line:hover + .branch-tooltip {
+      display: block;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tree: <%= @tree.name %></h1>
+    <!-- .tree-container where blossoms will be positioned -->
+    <div class="tree-container" id="tree-container">
+      <svg id="lines-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"></svg>
+      <% placed_positions = [] %> <!-- Array to keep track of placed blossom positions -->
+
+      <!-- Iterating over branches and their blossoms using Ruby -->
+      <% columnZeroBlossoms = @branches.flat_map { |b| b.blossoms }.select { |blossom| blossom.column == 0 } %>
+      <% otherBlossoms = @branches.flat_map { |b| b.blossoms }.reject { |blossom| blossom.column == 0 } %>
+
+      <!-- Calculate total width needed for column 0 blossoms -->
+      <% totalWidth = columnZeroBlossoms.size * 30 + (columnZeroBlossoms.size - 1) * 3 %> <!-- Each blossom is 30px wide with 3px spacing -->
+
+      <!-- Position column 0 blossoms centered horizontally -->
+      <% columnZeroBlossoms.each_with_index do |blossom, blossom_index| %>
+        <% bottom_position = 50 %> <!-- Starting 100px from the bottom -->
+        <% left_position = (600 - totalWidth / 2) + blossom_index * 33 %> <!-- Centered horizontally within the 1000px container -->
+        <% placed_positions << {left: left_position, bottom: bottom_position, blossom: blossom} %>
+        <% stage = @blossom_stages[blossom.id] %>
+        <% sphere_class = 'blossom' %>
+        <% if stage == 'Partially Demonstrated' %>
+          <% sphere_class += ' gold' %>
+        <% elsif stage == 'Fully Demonstrated' %>
+          <% sphere_class += ' glow pulse' %>
+        <% end %>
+        <div class="<%= sphere_class %>" data-row="<%= blossom.row %>" data-column="<%= blossom.column %>" data-branch-name="<%= blossom.branch.name %>" style="bottom: <%= bottom_position %>px; left: <%= left_position %>px;">
+          <div class="blossom-tooltip">
+            <strong><%= blossom.name %></strong><br>
+            <%= blossom.description %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Position other blossoms -->
+      <% otherBlossoms.each_with_index do |blossom, index| %>
+        <% random_height = rand(85..100) %> <!-- Random height between 85 and 100px -->
+        <% bottom_position = 100 + blossom.column * random_height %> <!-- Dynamic bottom position based on column with random height -->
+        
+        <% left_position = 10 + index * 30 %> <!-- Adjusted left position based on index, within 30px from the left -->
+
+        <!-- Check for overlaps and adjust position -->
+        <% loop do %>
+          <% overlapping = placed_positions.any? do |pos| %>
+            <% (left_position - pos[:left]).abs < 33 && (bottom_position - pos[:bottom]).abs < 33 %>
+          <% end %>
+          <% break unless overlapping %>
+          <% left_position += 33 %> <!-- Adjust position to avoid overlap -->
+        <% end %>
+
+        <% placed_positions << {left: left_position, bottom: bottom_position, blossom: blossom} %>
+        <% stage = @blossom_stages[blossom.id] %>
+        <% sphere_class = 'blossom' %>
+        <% if stage == 'Partially Demonstrated' %>
+          <% sphere_class += ' gold ' %>
+        <% elsif stage == 'Fully Demonstrated' %>
+          <% sphere_class += ' glow pulse' %>
+        <% end %>
+        <div class="<%= sphere_class %>" data-row="<%= blossom.row %>" data-column="<%= blossom.column %>" data-branch-name="<%= blossom.branch.name %>" style="bottom: <%= bottom_position %>px; left: <%= left_position %>px; width: 30px; height: 30px;">
+          <div class="blossom-tooltip">
+            <strong><%= blossom.name %></strong><br>
+            <%= blossom.description %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Scripts (jQuery) -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const blossoms = document.querySelectorAll('.blossom');
+      const svg = document.getElementById('lines-svg');
+
+      function drawLines() {
+        while (svg.firstChild) {
+          svg.removeChild(svg.firstChild);
+        }
+
+        blossoms.forEach(blossom => {
+          const startRow = parseInt(blossom.getAttribute('data-row'));
+          const startColumn = parseInt(blossom.getAttribute('data-column'));
+          const startX = blossom.offsetLeft + blossom.offsetWidth / 2;
+          const startY = blossom.offsetTop + blossom.offsetHeight / 2;
+          const branchName = blossom.getAttribute('data-branch-name');
+
+          let closestEndX = null;
+          let closestEndY = null;
+          let closestBlossom = null;
+          let closestDistance = Infinity;
+
+          blossoms.forEach(otherBlossom => {
+            if (blossom === otherBlossom) return;
+            if (blossom.getAttribute('data-branch-name') !== otherBlossom.getAttribute('data-branch-name')) return;
+
+            const otherRow = parseInt(otherBlossom.getAttribute('data-row'));
+            const otherColumn = parseInt(otherBlossom.getAttribute('data-column'));
+
+            if (otherColumn >= startColumn) return;
+
+            const otherX = otherBlossom.offsetLeft + otherBlossom.offsetWidth / 2;
+            const otherY = otherBlossom.offsetTop + otherBlossom.offsetHeight / 2;
+
+            const distance = Math.sqrt(Math.pow(otherX - startX, 2) + Math.pow(otherY - startY, 2));
+
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestEndX = otherX;
+              closestEndY = otherY;
+              closestBlossom = otherBlossom;
+            }
+          });
+
+          if (closestEndX !== null && closestEndY !== null) {
+            console.log(`Drawing line from (${startX}, ${startY}) to (${closestEndX}, ${closestEndY})`);
+
+            // Determine if it's a C or S curve
+            const isCCurve = Math.random() > 0.5;
+            const controlPoint1X = isCCurve ? (startX + closestEndX) / 2 : startX;
+            const controlPoint1Y = isCCurve ? startY : (startY + closestEndY) / 2;
+            const controlPoint2X = isCCurve ? (startX + closestEndX) / 2 : closestEndX;
+            const controlPoint2Y = isCCurve ? closestEndY : (startY + closestEndY) / 2;
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const d = `M ${startX},${startY} C ${controlPoint1X},${controlPoint1Y} ${controlPoint2X},${controlPoint2Y} ${closestEndX},${closestEndY}`;
+            path.setAttribute('d', d);
+            path.setAttribute('class', 'branch-line');
+            path.setAttribute('data-branch-name', branchName);
+            svg.appendChild(path);
+
+            const branchTooltip = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            branchTooltip.className = 'branch-tooltip';
+            branchTooltip.setAttribute('x', (startX + closestEndX) / 2);
+            branchTooltip.setAttribute('y', (startY + closestEndY) / 2);
+            branchTooltip.setAttribute('fill', '#fff');
+            branchTooltip.setAttribute('font-size', '12');
+            branchTooltip.setAttribute('background', '#333');
+            branchTooltip.textContent = branchName;
+            branchTooltip.style.display = 'none';
+            svg.appendChild(branchTooltip);
+
+            path.addEventListener('mouseover', function() {
+              branchTooltip.style.display = 'block';
+            });
+
+            path.addEventListener('mouseout', function() {
+              branchTooltip.style.display = 'none';
+            });
+          }
+        });
+      }
+
+      drawLines();
+      window.addEventListener('resize', drawLines);
+    });
+  </script>
+</body>
+</html>

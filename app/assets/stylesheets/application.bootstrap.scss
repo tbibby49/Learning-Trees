@@ -1,0 +1,10 @@
+@import 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons';
+
+.navbar-primary {
+  z-index: 1000; /* Adjust as needed */
+}
+
+.navbar-secondary {
+  z-index: 900; /* Adjust as needed */
+}

@@ -1,0 +1,13 @@
+
+<div id="<%= dom_id(blossom) %>" 
+  class="sphere draggable-sphere" 
+  data-blossom-name="<%= blossom.name %>" 
+  data-blossom-description="<%= blossom.description %>" 
+  data-blossom-row="<%= blossom.row %>" 
+  data-blossom-column="<%= blossom.column %>" 
+  draggable="true" 
+  ondragstart="drag(event)"
+  onmouseenter="showCard(event)" 
+  onmouseleave="hideCard(event)"
+  ondblclick="handleDoubleClick(event)">
+</div>

@@ -1,0 +1,77 @@
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('[data-toggle="tooltip"]').tooltip({
+                html: true
+            });
+        });
+
+        // Allow drop
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        // Handle drag
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.dataset.blossomId);
+        }
+
+        // Handle drop
+        function drop(event) {
+            event.preventDefault();
+            const blossomId = event.dataTransfer.getData("text");
+            const blossom = document.querySelector(`.sphere[data-blossom-id="${blossomId}"]`);
+
+            if (!blossom) {
+                console.error('Blossom not found');
+                return;
+            }
+
+            if (event.target.classList.contains('grid-cell') && !event.target.hasChildNodes()) {
+                const row = event.target.getAttribute('data-row');
+                const column = event.target.getAttribute('data-column');
+
+                // Update the blossom's dataset attributes
+                blossom.setAttribute('data-row', row);
+                blossom.setAttribute('data-column', column);
+
+                // Append the dragged blossom to the target cell
+                event.target.appendChild(blossom);
+
+                // Optionally update the position on the server
+                savePositionsToServer(blossomId, row, column);
+            }
+        }
+
+        // Function to save positions to the server
+        function savePositionsToServer(blossomId, row, column) {
+            const position = {
+                id: blossomId,
+                row: parseInt(row, 10),
+                column: parseInt(column, 10)
+            };
+
+            fetch('/blossoms/update_position', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify(position)
+            }).then(response => {
+                if (response.ok) {
+                    console.log('Position updated successfully');
+                } else {
+                    console.error('Failed to update position');
+                }
+            }).catch(error => {
+                console.error('Error saving position:', error);
+            });
+        }
+    </script>
+</body>
+</html>

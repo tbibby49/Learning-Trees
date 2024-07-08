@@ -1,0 +1,47 @@
+<%= form_with(model: [@tree, @branch, Blossom]) do |form| %>
+  <% if blossom.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(blossom.errors.count, "error") %> prohibited this blossom from being saved:</h2>
+
+      <ul>
+        <% blossom.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, style: "display: block" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.label :description, style: "display: block" %>
+    <%= form.text_area :description %>
+  </div>
+
+  <div>
+    <%= form.label :position, style: "display: block" %>
+    <%= form.number_field :position %>
+  </div>
+
+  <div>
+    <%= form.label :row, style: "display: block" %>
+    <%= form.number_field :row %>
+  </div>
+
+  <div>
+    <%= form.label :column, style: "display: block" %>
+    <%= form.number_field :column %>
+  </div>
+
+  <div>
+    <%= form.label :branch_id, style: "display: block" %>
+    <%= form.text_field :branch_id %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

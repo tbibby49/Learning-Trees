@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Blossoms</h1>
+
+<div id="blossoms">
+  <% @blossoms.each do |blossom| %>
+    <%= render blossom %>
+    <p>
+      <%= link_to "Show this blossom", blossom %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New blossom", new_blossom_path %>

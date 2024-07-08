@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @blossom %>
+
+<div>
+  <%= link_to "Edit this blossom", edit_blossom_path(@blossom) %> |
+  <%= link_to "Back to blossoms", blossoms_path %>
+
+  <%= button_to "Destroy this blossom", @blossom, method: :delete %>
+</div>
