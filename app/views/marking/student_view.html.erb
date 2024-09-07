@@ -92,7 +92,7 @@
         <%= label_tag 'assessment_item_id', 'Select Assessment Item:' %>
         <%= select_tag 'assessment_item_id', options_for_select(@assessment_items.map { |ai| [ai.name, ai.id] }, params[:assessment_item_id]), class: 'form-control' %>
       </div>
-      <%= submit_tag 'Submit', class: 'btn btn-primary' %>
+      <%= submit_tag 'Show', class: 'btn btn-primary' %>
     <% end %>
 
     <%= render 'display_tree' %>

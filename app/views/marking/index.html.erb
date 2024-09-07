@@ -25,8 +25,9 @@
               <%= select_tag 'assessment_item_id', options_for_select(@assessment_items.map { |ai| [ai.name, ai.id] }, params[:assessment_item_id]), class: 'form-control', style: 'display: inline-block; width: auto;', id: 'assessment_item_id' %>
               <%= hidden_field_tag 'assessment_item_id', params[:assessment_item_id] %>
             </div>
+            <%= link_to 'View Student Trees', "#{tree_marking_path(@tree)}/student_view", class: 'btn btn-outline-primary' %>
 
-            <%= submit_tag 'Submit', class: 'btn btn-secondary', style: 'display: inline-block;', id: 'submit_button' %>
+
           <% end %>
           </div>
 
@@ -45,6 +46,8 @@
 
 
 <div class="container mt-5 pt-5">
+  <div id="notification_area" class="mt-4"></div>
+
   
   <!-- Offcanvas for each branch -->
   <% @branches.each do |branch| %>
@@ -79,7 +82,7 @@
       </div>
     </div>
   <% end %>
-
+</div>
 
 <script>
   function saveBranch(branchId) {
@@ -123,8 +126,10 @@
         console.error('Failed to save branch stages.');
         throw new Error('Failed to save branch stages.');
       }
-    }).then(saved_blossoms => {
-      // Check if saved_blossoms is an array
+    }).then(data => {
+      // Access the saved_blossoms array from the response
+      const saved_blossoms = data.saved_blossoms;
+
       if (Array.isArray(saved_blossoms)) {
         const notificationArea = document.querySelector('#notification_area');
         notificationArea.innerHTML = saved_blossoms.map(blossom_assessment => `
@@ -134,7 +139,7 @@
               <p class="card-text">Student ID: ${blossom_assessment.student_id}</p>
               <p class="card-text">Assessment Item ID: ${blossom_assessment.assessment_item_id}</p>
               <p class="card-text">Blossom ID: ${blossom_assessment.blossom_id}</p>
-              <p class="card-text">Branch: ${blossom_assessment.branch}</p>
+              <p class="card-text">Branch: ${blossom_assessment.branch_id}</p>
               <p class="card-text">Stage: ${blossom_assessment.stage}</p>
             </div>
           </div>
@@ -146,7 +151,6 @@
     }).catch(error => {
       console.error('Error saving branch stages:', error);
     });
-
   }
 </script>
 

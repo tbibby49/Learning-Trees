@@ -6,6 +6,5 @@ class Blossom < ApplicationRecord
   has_many :assessment_items, through: :blossom_assessments
 
   validates :name, presence: true
-  validates :description, presence: true
 
 end

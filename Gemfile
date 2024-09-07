@@ -71,3 +71,4 @@ end
 
 gem 'devise'
 gem 'faker'
+gem 'turbolinks', '~> 5'
