@@ -1,0 +1,36 @@
+<h1>Edit Resource</h1>
+
+<%= form_with(model: [@tree, @branch, @blossom, @resource], local: true, html: { multipart: true }) do |form| %>
+  <% if @resource.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@resource.errors.count, "error") %> prohibited this resource from being saved:</h2>
+
+      <ul>
+        <% @resource.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name, value: @resource.name %>
+  </div>
+
+  <div class="field">
+    <%= form.label :description %>
+    <%= form.text_area :description, value: @resource.description %>
+  </div>
+
+  <div class="field">
+    <%= form.label :document %>
+    <%= form.file_field :document %>
+    <p>Current attachment: <%= @resource.document.attached? ? link_to(@resource.document.filename, url_for(@resource.document)) : 'None' %></p>
+  </div>
+
+  <div class="actions">
+    <%= form.submit "Update Resource", class: "btn btn-primary" %>
+  </div>
+<% end %>
+

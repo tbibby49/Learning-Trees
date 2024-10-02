@@ -16,7 +16,10 @@ class BlossomsController < ApplicationController
 
   # GET /blossoms/1 or /blossoms/1.json
   def show
+    @tree = Tree.find(params[:tree_id])
+    @branch = Branch.find(params[:branch_id])
     @blossom = Blossom.find(params[:id])
+    @resources = @blossom.resources
   end
 
   def spheres
@@ -45,6 +48,7 @@ class BlossomsController < ApplicationController
 
   # GET /blossoms/1/edit
   def edit
+    @resources = @blossom.resources
   end
 
   # POST /blossoms or /blossoms.json
@@ -67,7 +71,7 @@ class BlossomsController < ApplicationController
   def update
     respond_to do |format|
       if @blossom.update(blossom_params)
-        format.html { redirect_to tree_branch_path(@branch.tree, @branch), notice: 'Blossom was successfully destroyed.' }
+        format.html { redirect_to tree_branch_path(@branch.tree, @branch), notice: 'Blossom was successfully updated.' }
         format.json { render :show, status: :ok, location: @blossom }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -108,6 +112,6 @@ class BlossomsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def blossom_params
-      params.require(:blossom).permit(:name, :description, :permission, :branch_id, :tree_id, :position, :row, :column)
+      params.require(:blossom).permit(:name, :description, :permission, :branch_id, :tree_id, :position, :row, :column, resources_attributes: [:id, :name, :description, :document, :_destroy])
     end
 end

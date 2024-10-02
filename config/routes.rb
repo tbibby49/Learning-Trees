@@ -29,6 +29,9 @@ Rails.application.routes.draw do
     member do
       get 'student_view', to: 'marking#student_view'
     end
+    member do
+      post :update_cutoffs
+    end
     get 'marking', to: 'marking#index'
     get '/marking/student_view', to: 'marking#student_view', as: 'student_view'
     post 'marking/save_branch_blossom_stages', to: 'marking#save_branch_blossom_stages'
@@ -37,8 +40,8 @@ Rails.application.routes.draw do
       resources :blossoms do
         collection do
           patch :update_positions
-
         end
+        resources :resources
       end
     end
   end

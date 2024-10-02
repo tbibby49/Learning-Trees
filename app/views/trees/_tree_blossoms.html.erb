@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="tree-id" content="<%= @tree.id %>">
+
   <title>Tree Show Page</title>
 
   <!-- Include Bootstrap CSS -->
@@ -135,10 +137,17 @@
         <% end %>
 
         <% placed_positions << {left: left_position, bottom: bottom_position, blossom: blossom} %>
-        <div class="blossom" data-row="<%= blossom.row %>" data-column="<%= blossom.column %>" data-branch-name="<%= blossom.branch.name %>" style="bottom: <%= bottom_position %>px; left: <%= left_position %>px; width: 30px; height: 30px;">
+        <div class="blossom" 
+            data-row="<%= blossom.row %>" 
+            data-column="<%= blossom.column %>" 
+            data-branch-id="<%= blossom.branch.id %>"   
+            data-blossom-id="<%= blossom.id %>"        
+            data-branch-name="<%= blossom.branch.name %>" 
+            style="bottom: <%= bottom_position %>px; left: <%= left_position %>px;">
           <div class="blossom-tooltip">
             <strong><%= blossom.name %></strong><br>
             <%= blossom.description %>
+            
           </div>
         </div>
       <% end %>
@@ -233,6 +242,28 @@
       drawLines();
       window.addEventListener('resize', drawLines);
     });
+
+   document.addEventListener('DOMContentLoaded', function() {
+      const blossoms = document.querySelectorAll('.blossom');
+      const treeId = document.querySelector('meta[name="tree-id"]').content; // Get tree ID from meta tag
+
+      blossoms.forEach(blossom => {
+        // Add double-click event listener
+        blossom.addEventListener('dblclick', function() {
+          const branchId = blossom.getAttribute('data-branch-id'); // Get branch ID now
+          const blossomId = blossom.getAttribute('data-blossom-id'); // Get blossom ID
+
+          // Construct the URL for the edit page
+          const editUrl = `/trees/${treeId}/branches/${branchId}/blossoms/${blossomId}/edit`;
+
+          // Redirect to the edit page for the clicked blossom
+          window.location.href = editUrl;
+        });
+      });
+    });
+
   </script>
+
+
 </body>
 </html>

@@ -21,7 +21,19 @@
             <%= render tree %>
     </div>
       <div class="col-6">
-        <button type="button" class="btn btn-outline-primary"><%= link_to "Go to tree", tree %></button>
+        <%= link_to "Go to tree", tree_path(tree), class: "btn btn-outline-primary" %>
+        <%= button_to "Delete tree", tree_path(tree), method: :delete, data: { confirm: "Are you sure you want to delete this tree?" }, class: "btn btn-outline-danger" %>
+          <% if flash[:warning] %>
+            <div class="alert alert-warning">
+              <%= flash[:warning] %>
+            </div>
+          <% end %>
+
+          <% if flash[:success] %>
+            <div class="alert alert-success">
+              <%= flash[:success] %>
+            </div>
+          <% end %>
         
       </div>
           <% end %>

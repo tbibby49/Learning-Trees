@@ -71,6 +71,24 @@ class TreesController < ApplicationController
       format.html { redirect_to trees_url, notice: "Tree was successfully destroyed." }
       format.json { head :no_content }
     end
+
+
+  end
+
+  def update_cutoffs
+    @tree = Tree.find(params[:id])
+
+    # Extract the cutoffs from the form
+    cutoff_a = params[:cutoff_a].to_i
+    cutoff_b = params[:cutoff_b].to_i
+    cutoff_c = params[:cutoff_c].to_i
+    cutoff_d = params[:cutoff_d].to_i
+
+    # Save these cutoffs (you'll likely want to store them somewhere like a model)
+    @tree.update(cutoff_a: cutoff_a, cutoff_b: cutoff_b, cutoff_c: cutoff_c, cutoff_d: cutoff_d)
+
+    # Redirect or render as needed
+    redirect_to @tree, notice: "Grade cutoffs have been updated."
   end
 
   private
@@ -83,4 +101,6 @@ class TreesController < ApplicationController
     def tree_params
       params.require(:tree).permit(:name, :description, :point_total)
     end
+
+
 end

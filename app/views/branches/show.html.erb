@@ -58,178 +58,177 @@
     </style>
 </head>
 
+<body>
   <p style="color: green"><%= notice %></p>
   <div>
-  <%= render @branch %>
+    <%= render @branch %>
   </div>
 
-<!-- Add a form to create a new blossom -->
-<div class = "container">
-  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Add a blossom
-  </button>
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Add a blossom</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <%= form_with(model: [@tree, @branch, Blossom.new]) do |form| %>
+  <!-- Add a form to create a new blossom -->
+  <div class="container">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      Add a blossom
+    </button>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add a blossom</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <%= form_with(model: [@tree, @branch, Blossom.new]) do |form| %>
               <div>
-                  <%= form.label :name %>
-                  <%= form.text_field :name %>
+                <%= form.label :name %>
+                <%= form.text_field :name %>
               </div>
               
               <div>
-                  <%= form.label :description %>
-                  <%= form.text_area :description %>
+                <%= form.label :description %>
+                <%= form.text_area :description %>
               </div>    
-            <%= form.submit "Create Blossom", class: "btn btn-primary" %>
-          <% end %>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        
+              <%= form.submit "Create Blossom", class: "btn btn-primary" %>
+            <% end %>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-  
-<div class="container text-center">
-    <!-- Right column for the grid -->
-  <div class="col-md-11">
-    <div class="container" id="grid-container">
-      <%= render 'grid'%>
-    </div>
+  <!-- Display the total number of blossoms -->
+  <div class="container text-center mt-4">
+    <h4>Total Number of Blossoms: <%= @branch.blossoms.count %></h4>
   </div>
-</div>    
 
-<div class="container">
+  <div class="container text-center">
+    <!-- Right column for the grid -->
+    <div class="col-md-11">
+      <div class="container" id="grid-container">
+        <%= render 'grid'%>
+      </div>
+    </div>
+  </div>    
+
+  <div class="container">
     <p style="color: green"><%= notice %></p>
     <div class="row">
-        <!-- Left column for the 'add blossom' link -->
-        <div class="col-md-1">
-            <strong>blossoms</strong>
-            <div id="blossoms-container" class="mt-4">
-                <% @branch.blossoms.each do |blossom| %>
-                    <div class="card blossom" id="<%= dom_id(blossom) %>" data-row="<%= blossom.row %>" data-column="<%= blossom.column %>">
-                        <%= render blossom %>
-                    </div>
-                <% end %>
+      <!-- Left column for the 'add blossom' link -->
+      <div class="col-md-1">
+        <strong>Blossoms</strong>
+        <div id="blossoms-container" class="mt-4">
+          <% @branch.blossoms.each do |blossom| %>
+            <div class="card blossom" id="<%= dom_id(blossom) %>" data-row="<%= blossom.row %>" data-column="<%= blossom.column %>">
+              <%= render blossom %>
             </div>
+          <% end %>
         </div>
-
-    <div id="blossom-card" class="card position-absolute" style="width: 18rem; display: none;">
-      <div class="card-body">
-        <h5 id="card-title" class="card-title"></h5>
-        <p id="card-description" class="card-text"></p>
-        <p id="card-position" class="card-text"></p>
       </div>
-    </div>
 
+      <div id="blossom-card" class="card position-absolute" style="width: 18rem; display: none;">
+        <div class="card-body">
+          <h5 id="card-title" class="card-title"></h5>
+          <p id="card-description" class="card-text"></p>
+          <p id="card-position" class="card-text"></p>
+        </div>
+      </div>
     
- 
-    
-    <script>
+      <script>
         function showCard(event) {
-            const sphere = event.target;
-            const card = document.getElementById('blossom-card');
+          const sphere = event.target;
+          const card = document.getElementById('blossom-card');
 
-            const name = sphere.getAttribute('data-blossom-name');
-            const description = sphere.getAttribute('data-blossom-description');
-            const row = sphere.getAttribute('data-blossom-row');
-            const column = sphere.getAttribute('data-blossom-column');
+          const name = sphere.getAttribute('data-blossom-name');
+          const description = sphere.getAttribute('data-blossom-description');
+          const row = sphere.getAttribute('data-blossom-row');
+          const column = sphere.getAttribute('data-blossom-column');
 
-            const cardTitle = document.getElementById('card-title');
-            const cardDescription = document.getElementById('card-description');
-            const cardPosition = document.getElementById('card-position');
+          const cardTitle = document.getElementById('card-title');
+          const cardDescription = document.getElementById('card-description');
+          const cardPosition = document.getElementById('card-position');
 
-            cardTitle.textContent = name;
-            cardDescription.textContent = description;
-            cardPosition.textContent = `Row: ${row} Column: ${column}`;
+          cardTitle.textContent = name;
+          cardDescription.textContent = description;
+          cardPosition.textContent = `Row: ${row} Column: ${column}`;
 
-            const rect = sphere.getBoundingClientRect();
-            card.style.top = `${rect.top + window.scrollY + sphere.offsetHeight}px`;
-            card.style.left = `${rect.left + window.scrollX}px`;
-            card.style.display = 'block';
+          const rect = sphere.getBoundingClientRect();
+          card.style.top = `${rect.top + window.scrollY + sphere.offsetHeight}px`;
+          card.style.left = `${rect.left + window.scrollX}px`;
+          card.style.display = 'block';
         }
 
         function hideCard(event) {
-            const card = document.getElementById('blossom-card');
-            card.style.display = 'none';
+          const card = document.getElementById('blossom-card');
+          card.style.display = 'none';
         }
 
         $(document).ready(function() {
-            $('[data-toggle="tooltip"]').tooltip({
-                html: true
-            });
+          $('[data-toggle="tooltip"]').tooltip({
+            html: true
+          });
         });
-    </script>
+      </script>
 
+      <!-- Double click handling -->
+      <style>
+        .sphere {
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
+          border: 2px solid gold;
+          background-color: transparent;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: 0 0 0 2px black;
+          position: relative;
+          margin-right: 10px;
+          z-index: 999;
+        }
+        .tooltip-inner {
+          white-space: nowrap;
+        }
+        .context-menu {
+          display: none;
+          position: absolute;
+          z-index: 2000;
+          background: white;
+          border: 1px solid #ccc;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          padding: 10px;
+          list-style: none;
+        }
+        .context-menu li {
+          padding: 8px 12px;
+          cursor: pointer;
+        }
+        .context-menu li:hover {
+          background-color: #eee;
+        }
+      </style>
+      <script>
+        function handleDoubleClick(event) {
+          const blossom = event.currentTarget;
+          const blossomId = blossom.id.replace('blossom_', '');
 
+          // Retrieve tree and branch IDs from meta tags
+          const treeId = document.querySelector('meta[name="tree-id"]').getAttribute('content');
+          const branchId = document.querySelector('meta[name="branch-id"]').getAttribute('content');
 
-<!-- Double click handling -->
-<style>
-  .sphere {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    border: 2px solid gold;
-    background-color: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 0 0 2px black;
-    position: relative;
-    margin-right: 10px;
-    z-index: 999;
-  }
-  .tooltip-inner {
-    white-space: nowrap;
-  }
-  .context-menu {
-    display: none;
-    position: absolute;
-    z-index: 2000;
-    background: white;
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    padding: 10px;
-    list-style: none;
-  }
-  .context-menu li {
-    padding: 8px 12px;
-    cursor: pointer;
-  }
-  .context-menu li:hover {
-    background-color: #eee;
-  }
-</style>
-<script>
-function handleDoubleClick(event) {
-    const blossom = event.currentTarget;
-    const blossomId = blossom.id.replace('blossom_', '');
+          // Construct the correct edit path
+          const editPath = `/trees/${treeId}/branches/${branchId}/blossoms/${blossomId}/edit`;
+          window.location.href = editPath;
+        }
 
-    // Retrieve tree and branch IDs from meta tags
-    const treeId = document.querySelector('meta[name="tree-id"]').getAttribute('content');
-    const branchId = document.querySelector('meta[name="branch-id"]').getAttribute('content');
-
-    // Construct the correct edit path
-    const editPath = `/trees/${treeId}/branches/${branchId}/blossoms/${blossomId}/edit`;
-    window.location.href = editPath;
-}
-
-// Add event listeners to blossoms
-document.querySelectorAll('.blossom').forEach(blossom => {
-    blossom.addEventListener('dblclick', handleDoubleClick);
-});
-</script>
+        // Add event listeners to blossoms
+        document.querySelectorAll('.blossom').forEach(blossom => {
+          blossom.addEventListener('dblclick', handleDoubleClick);
+        });
+      </script>
+    </div>
+  </div>
 </body>
-
-
 </html>

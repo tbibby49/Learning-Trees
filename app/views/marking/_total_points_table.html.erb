@@ -1,0 +1,52 @@
+
+
+  <% total_points_possible = 0 %> <!-- Initialize total points possible -->
+  <% total_points_achieved = 0 %> <!-- Initialize total points achieved -->
+
+  <div class="branches-container">
+    <% @branches.each do |branch| %>
+    
+        <h5><% branch.name %></h5>
+        <% branch.blossoms.count %>
+        
+        <!-- Calculate points possible for this branch -->
+        <% branch_points_possible = branch.blossoms.count * 2 %>
+        <% branch_points_possible %>
+        
+        <!-- Add branch points possible to the total -->
+        <% total_points_possible += branch_points_possible %>
+        
+        <% branch_points = 0 %> <!-- Initialize points for this branch -->
+
+        <% branch.blossoms.each do |blossom| %>
+          <% stage = @blossom_stages[blossom.id] %>
+          <% if stage == 'Partially Demonstrated' %>
+            <% branch_points += 1 %> <!-- Add 1 point for Partially Demonstrated -->
+          <% elsif stage == 'Fully Demonstrated' %>
+            <% branch_points += 2 %> <!-- Add 2 points for Fully Demonstrated -->
+          <% end %>
+        <% end %>
+        
+        <!-- Add branch points to the total points achieved -->
+        <% total_points_achieved += branch_points %>
+        
+        <!-- Display the total points for the branch -->
+        <% branch_points %>
+    
+    <% end %>
+  </div>
+
+
+<!-- Separate card showing the total points across all branches -->
+<div class="card text-center">
+  <div class="card-header">
+    Progress
+  </div>
+    <div class="card-body">
+  <h5 class="card-title">Total Points Possible: <%= total_points_possible %></h5>
+  <h5 class=>Total Points Achieved: <%= total_points_achieved %></h5>
+    </div>
+</div>
+
+
+

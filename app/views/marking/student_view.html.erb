@@ -81,43 +81,62 @@
 </head>
 
 <body>
-  <div class="container">
+  <div class="container text-center">
+    
     <h1>Tree: <%= @tree.name %></h1>
+    <div class="row align-items-start">
+      <div class="col">
+    
     <%= form_tag({ controller: 'marking', action: 'student_view', tree_id: @tree.id }, method: :get) do %>
       <div class="form-group">
-        <%= label_tag 'student_id', 'Select Student:' %>
-        <%= select_tag 'student_id', options_for_select(@students.map { |s| [s.email, s.id] }, params[:student_id]), class: 'form-control' %>
+        <%= select_tag 'student_id', 
+          options_for_select([['Student name', '']] + @students.map { |s| [s.email, s.id] }, params[:student_id]), 
+          class: 'form-select' %>
       </div>
+
       <div class="form-group">
-        <%= label_tag 'assessment_item_id', 'Select Assessment Item:' %>
-        <%= select_tag 'assessment_item_id', options_for_select(@assessment_items.map { |ai| [ai.name, ai.id] }, params[:assessment_item_id]), class: 'form-control' %>
+        <%= select_tag 'assessment_item_id', 
+        options_for_select([['Assessment item', '']] + @assessment_items.map { |ai| [ai.name, ai.id] }, params[:assessment_item_id]), 
+        class: 'form-select' %>
       </div>
+
       <%= submit_tag 'Show', class: 'btn btn-primary' %>
     <% end %>
-
-    <%= render 'display_tree' %>
-
-    <div class="branches-container">
-      <% @branches.each do |branch| %>
-        <div class="branch-column">
-          <h2><%= branch.name %></h2>
-          <% branch.blossoms.each do |blossom| %>
-            <%= stage = @blossom_stages[blossom.id] %>
-            <% sphere_class = 'sphere' %>
-            <% if stage == 'Partially Demonstrated' %>
-              <% sphere_class += ' gold' %>
-            <% elsif stage == 'Fully Demonstrated' %>
-              <% sphere_class += ' glow' %>
-            <% end %>
-            <div class="<%= sphere_class %>">
-              <%= blossom.row %>
-              <div class="tooltip"><%= blossom.name %></div>
-            </div>
-          <% end %>
-        </div>
-      <% end %>
-    </div>
+   </div>
+  <div class="col">
+    <%= render 'total_points_table' %>
   </div>
+
+  <div class = "col">
+    <%= render 'grade_cutoffs'%>
+  </div>
+
+  <%= render 'display_tree' %>
+
+   <div class="branches-container">
+    <% @branches.each do |branch| %>
+      <div class="branch-column">
+        <h5><%= branch.name %></h5>
+        <% branch.blossoms.count %>        
+        <!-- Calculate points possible for this branch -->
+        <h6>Branch Points Possible: <%= branch.blossoms.count * 2 %></h6>        
+        <% branch_points = 0 %> </h6><!-- Initialize points for this branch -->
+        <% branch.blossoms.each do |blossom| %>
+          <% stage = @blossom_stages[blossom.id] %>
+          <% if stage == 'Partially Demonstrated' %>
+            <% branch_points += 1 %> <!-- Add 1 point for Partially Demonstrated -->
+          <% elsif stage == 'Fully Demonstrated' %>
+            <% branch_points += 2 %> <!-- Add 2 points for Fully Demonstrated -->
+          <% end %>          
+        <% end %>        
+        <!-- Display the total points for the branch -->
+        <h6>Branch Points Earned: <%= branch_points %></h6>
+      </div>
+    <% end %>
+  </div>
+
+  
+
 </body>
 </html>
 

@@ -4,13 +4,10 @@
 
 <h1><%= @tree.name %></h1>
 
-<!-- Other tree details -->
 
+<%= link_to 'Add Assessment Item', new_tree_assessment_item_path(@tree), class: "btn btn-primary" %> 
 
-
-<button type="button" class="btn btn-outline-primary"><%= link_to 'Add Assessment Item', new_tree_assessment_item_path(@tree) %> </button>
-
-<%= link_to 'Marking Page',tree_marking_path(@tree), class: 'btn btn-primary' %>
+<%= link_to 'Go To Marking Page',tree_marking_path(@tree), class: 'btn btn-primary' %>
 
 
 <div class="d-grid gap-2">
@@ -73,6 +70,7 @@
   <% end %>
   </div>
 
+ 
 </div>
 <br>
   <div>
@@ -80,8 +78,87 @@
   </div>
 
 
+<!-- adding up the blossoms -->
+   
+    <% @tree.branches.each do |branch| %>
+      <tr>
+        <td><% branch.name %></td>
+        <td><% branch.blossoms.count %></td>
+      </tr>
+    <% end %>
+    <tr>
+      
+      <td><strong><% @branches.inject(0) { |sum, branch| sum + branch.blossoms.count } %></strong></td>
+    </tr>
+    <tr>
+      <td><strong>Total Points Possible:</strong></td>
+      <td><strong><%= @branches.inject(0) { |sum, branch| sum + branch.blossoms.count } * 2 %></strong></td>
+    </tr>
+  </tbody>
 
 
+<h4>Grade Cutoff Inputs</h4>
+<form action="<%= update_cutoffs_tree_path(@tree) %>" method="POST">
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Grade</th>
+        <th>Cutoff</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>A</td>
+        <td><input type="number" name="cutoff_a" class="form-control" placeholder="Enter A cutoff"></td>
+      </tr>
+      <tr>
+        <td>B</td>
+        <td><input type="number" name="cutoff_b" class="form-control" placeholder="Enter B cutoff"></td>
+      </tr>
+      <tr>
+        <td>C</td>
+        <td><input type="number" name="cutoff_c" class="form-control" placeholder="Enter C cutoff"></td>
+      </tr>
+      <tr>
+        <td>D</td>
+        <td><input type="number" name="cutoff_d" class="form-control" placeholder="Enter D cutoff"></td>
+      </tr>
+    </tbody>
+  </table>
+  <button type="submit" class="btn btn-primary">Submit Cutoffs</button>
+</form>
+
+
+<!--  -->
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Grade</th>
+      <th>Cutoff</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A</td>
+      <td><%= @tree.cutoff_a %></td>
+    </tr>
+    <tr>
+      <td>B</td>
+      <td><%= @tree.cutoff_b %></td>
+    </tr>
+    <tr>
+      <td>C</td>
+      <td><%= @tree.cutoff_c %></td>
+    </tr>
+    <tr>
+      <td>D</td>
+      <td><%= @tree.cutoff_d %></td>
+    </tr>
+  </tbody>
+</table>
 
 
 

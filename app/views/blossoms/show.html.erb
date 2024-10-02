@@ -1,10 +1,28 @@
 <p style="color: green"><%= notice %></p>
 
-<%= render @blossom %>
+<h1>Blossom: <%= @blossom.name %></h1>
+<p><strong>Description:</strong> <%= @blossom.description %></p>
+<p><strong>Branch:</strong> <%= @branch.name %></p>
+<p><strong>Tree:</strong> <%= @tree.name %></p>
 
-<div>
-  <%= link_to "Edit this blossom", edit_blossom_path(@blossom) %> |
-  <%= link_to "Back to blossoms", blossoms_path %>
+<h2>Associated Resources</h2>
 
-  <%= button_to "Destroy this blossom", @blossom, method: :delete %>
-</div>
+<% if @blossom.resources.any? %>  <!-- Consistently use @blossom.resources -->
+  <ul>
+    <% @blossom.resources.each do |resource| %>
+      <li>
+        <p>Name: <%= resource.name %></p>
+        <p>Description: <%= resource.description %></p>
+
+        <% if resource.document.attached? %>
+          <p>Document: <%= link_to 'Download', rails_blob_path(resource.document, disposition: "attachment") %></p>
+        <% end %>
+
+        
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No resources available for this blossom.</p>
+<% end %>
+
