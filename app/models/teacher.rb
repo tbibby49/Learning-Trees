@@ -4,4 +4,8 @@ class Teacher < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   has_many :students
+  has_many :trees
+
+  has_many :tree_shares, dependent: :destroy
+  has_many :shared_trees, through: :tree_shares, source: :tree
 end

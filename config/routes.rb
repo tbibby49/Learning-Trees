@@ -26,6 +26,8 @@ Rails.application.routes.draw do
 
 
   resources :trees do
+    post :share, on: :member
+    delete :unshare, on: :member
     member do
       get 'student_view', to: 'marking#student_view'
     end
@@ -44,6 +46,7 @@ Rails.application.routes.draw do
         resources :resources
       end
     end
+    resources :session_goals
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

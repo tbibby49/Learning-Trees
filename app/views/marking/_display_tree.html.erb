@@ -136,7 +136,7 @@
         <% if stage == 'Partially Demonstrated' %>
           <% sphere_class += ' gold' %>
         <% elsif stage == 'Fully Demonstrated' %>
-          <% sphere_class += ' glow pulse' %>
+          <% sphere_class += ' glow' %>
         <% end %>
         <div class="<%= sphere_class %>" data-row="<%= blossom.row %>" data-column="<%= blossom.column %>" data-branch-name="<%= blossom.branch.name %>" style="bottom: <%= bottom_position %>px; left: <%= left_position %>px;">
           <div class="blossom-tooltip">
@@ -168,7 +168,7 @@
         <% if stage == 'Partially Demonstrated' %>
           <% sphere_class += ' gold ' %>
         <% elsif stage == 'Fully Demonstrated' %>
-          <% sphere_class += ' glow pulse' %>
+          <% sphere_class += ' glow ' %>
         <% end %>
         <div class="<%= sphere_class %>" 
           data-row="<%= blossom.row %>" 
@@ -189,7 +189,7 @@
   <!-- Scripts (jQuery) -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('turbo:load', () => {
       const blossoms = document.querySelectorAll('.blossom');
       const svg = document.getElementById('lines-svg');
 
@@ -232,8 +232,7 @@
             }
           });
 
-          if (closestEndX !== null && closestEndY !== null) {
-            console.log(`Drawing line from (${startX}, ${startY}) to (${closestEndX}, ${closestEndY})`);
+          if (closestEndX !== null && closestEndY !== null) {     
 
             // Determine if it's a C or S curve
             const isCCurve = Math.random() > 0.5;
@@ -274,7 +273,7 @@
       drawLines();
       window.addEventListener('resize', drawLines);
     });
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('turbo:load', () => {
       const blossoms = document.querySelectorAll('.blossom');
       const treeId = document.querySelector('meta[name="tree-id"]').content; // Get tree ID from meta tag
 

@@ -21,10 +21,25 @@ class MarkingController < ApplicationController
   end
 
   def student_view
+
+    if params[:student_id].present?
+    @student = Student.find(params[:student_id])
+    @blossom_assessments = BlossomAssessment.where(student_id: params[:student_id], assessment_item_id: params[:assessment_item_id])
+    @blossom_stages = @blossom_assessments.each_with_object({}) do |assessment, hash|
+      hash[assessment.blossom_id] = assessment.stage
+    end
+    @session_goals = SessionGoal.where(student: @student, tree: @tree)
+  else
+    # Handle the case where no student is selected yet
+    @blossom_stages = {}
+    @session_goals = []
+  end
+
     @tree = Tree.find(params[:tree_id])
     @branches = @tree.branches.includes(:blossoms)
     @students = Student.all
     @assessment_items = @tree.assessment_items
+    @session_goal = SessionGoal.new
 
     if params[:student_id].present? && params[:assessment_item_id].present?
       @blossom_assessments = BlossomAssessment.where(student_id: params[:student_id], assessment_item_id: params[:assessment_item_id])
@@ -34,7 +49,11 @@ class MarkingController < ApplicationController
     else
       @blossom_stages = {}
     end
+
+    @session_goals = SessionGoal.where(student: @student, tree: @tree)
+
   end
+
 
 
   def save_branch_blossom_stages

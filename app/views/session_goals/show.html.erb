@@ -1,0 +1,81 @@
+<div class="card" style="width: 18rem;">
+  <div class="card-header">
+    Session Goals
+  </div>
+  <ul class="list-group list-group-flush">
+    <% @session_goals.each do |session_goal| %>
+      <li class="list-group-item session-goal-item" data-bs-toggle="tooltip" data-bs-placement="right" 
+          title="<%= sanitize(session_goal.goal) %><br><strong>Evidence:</strong> <%= sanitize(session_goal.evidence) %><br><strong>Self Assessment:</strong> <%= session_goal.self_assess %>">
+        <%= session_goal.date.strftime('%d %b %Y') %>
+      </li>
+    <% end %>
+  </ul>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl, {
+        html: true
+      })
+    })
+  });
+</script>
+
+<h5>Set Lesson Goal</h5>
+    <!-- Button to trigger modal -->
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sessionGoalModal">
+    Set New Goal
+  </button>
+      <!-- Modal Structure -->
+    <div class="modal fade" id="sessionGoalModal" tabindex="-1" aria-labelledby="sessionGoalModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="sessionGoalModalLabel">Set New Session Goal</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          
+          <div class="modal-body">
+            <%= form_with(model: @session_goal, url: tree_session_goals_path(@tree, @student), local: true) do |f| %>
+              <%= f.hidden_field :student_id, value: params[:student_id] %>
+              
+              <div class="form-group mb-3">
+                <%= f.label :date, 'Goal Date' %>
+                <%= f.date_field :date, class: 'form-control' %>
+              </div>
+              
+              <div class="form-group mb-3">
+                <%= f.label :goal, 'Goal' %>
+                <%= f.text_area :goal, class: 'form-control' %>
+              </div>
+              
+              <div class="form-group mb-3">
+                <%= f.label :evidence, 'Evidence' %>
+                <%= f.text_area :evidence, class: 'form-control' %>
+              </div>
+              
+              <div class="form-group mb-3">
+                <%= f.label :document, 'Upload Document' %>
+                <%= f.file_field :document, class: 'form-control' %>
+              </div>
+              
+              <div class="form-group mb-3">
+                <%= f.label :self_assess, 'Self Assessment' %>
+                <%= f.select :self_assess, options_for_select((1..5).map { |i| [i, i] }), {}, class: 'form-control' %>
+              </div>
+              
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <%= f.submit 'Set Goal', class: 'btn btn-primary' %>
+              </div>
+            <% end %>
+          </div>        
+        </div>
+      </div>
+    </div>
+
+    <%= render "session_goal_show" %>
+  </div>
+  

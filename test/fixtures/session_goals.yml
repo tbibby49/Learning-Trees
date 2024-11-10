@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  student: one
+  tree: one
+  date: 2024-10-04
+  goal: MyText
+  evidence: MyText
+  self_assess: 1
+
+two:
+  student: two
+  tree: two
+  date: 2024-10-04
+  goal: MyText
+  evidence: MyText
+  self_assess: 1

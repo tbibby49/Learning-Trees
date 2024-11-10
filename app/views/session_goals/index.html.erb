@@ -1,0 +1,27 @@
+<%= turbo_frame_tag "session_goals" do %>
+  <h1>Session Goals for <%= @tree.name %></h1>
+
+  
+
+  <% if @session_goals.any? %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Date</th>
+          <th>Goal</th>
+          <th>Evidence</th>
+          <th>Self Assess</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @session_goals.each do |goal| %>
+          <%= render partial: "session_goal", locals: { session_goal: goal } %>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p>No session goals available for this tree.</p>
+  <% end %>
+<% end %>

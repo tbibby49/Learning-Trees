@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_29_000956) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_09_213323) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -97,6 +97,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_29_000956) do
     t.index ["blossom_id"], name: "index_resources_on_blossom_id"
   end
 
+  create_table "session_goals", force: :cascade do |t|
+    t.integer "student_id", null: false
+    t.integer "tree_id", null: false
+    t.date "date"
+    t.text "goal"
+    t.text "evidence"
+    t.integer "self_assess"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "goal_type"
+    t.index ["student_id"], name: "index_session_goals_on_student_id"
+    t.index ["tree_id"], name: "index_session_goals_on_tree_id"
+  end
+
   create_table "students", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -123,6 +137,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_29_000956) do
     t.index ["reset_password_token"], name: "index_teachers_on_reset_password_token", unique: true
   end
 
+  create_table "tree_shares", force: :cascade do |t|
+    t.integer "tree_id", null: false
+    t.integer "teacher_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["teacher_id"], name: "index_tree_shares_on_teacher_id"
+    t.index ["tree_id"], name: "index_tree_shares_on_tree_id"
+  end
+
   create_table "trees", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -132,6 +155,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_29_000956) do
     t.integer "cutoff_b"
     t.integer "cutoff_c"
     t.integer "cutoff_d"
+    t.integer "teacher_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -143,5 +167,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_29_000956) do
   add_foreign_key "blossoms", "branches"
   add_foreign_key "branches", "trees"
   add_foreign_key "resources", "blossoms"
+  add_foreign_key "session_goals", "students"
+  add_foreign_key "session_goals", "trees"
   add_foreign_key "students", "teachers"
+  add_foreign_key "tree_shares", "teachers"
+  add_foreign_key "tree_shares", "trees"
 end

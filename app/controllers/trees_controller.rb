@@ -12,6 +12,7 @@ class TreesController < ApplicationController
 
   def index
     @trees = Tree.all
+    @trees = Tree.accessible_by(current_teacher)
   end
 
   # GET /trees/1 or /trees/1.json
@@ -71,8 +72,6 @@ class TreesController < ApplicationController
       format.html { redirect_to trees_url, notice: "Tree was successfully destroyed." }
       format.json { head :no_content }
     end
-
-
   end
 
   def update_cutoffs
@@ -89,6 +88,19 @@ class TreesController < ApplicationController
 
     # Redirect or render as needed
     redirect_to @tree, notice: "Grade cutoffs have been updated."
+  end
+
+  def share
+    @tree = Tree.find(params[:id])
+    @teacher = Teacher.find(params[:teacher_id])
+    TreeShare.create(tree: @tree, teacher: @teacher)
+    redirect_to trees_path, notice: "Tree shared with #{@teacher.email}."
+  end
+
+  def unshare
+    @tree = Tree.find(params[:id])
+    TreeShare.find_by(tree: @tree, teacher_id: params[:teacher_id])&.destroy
+    redirect_to trees_path, notice: "Tree unshared successfully."
   end
 
   private

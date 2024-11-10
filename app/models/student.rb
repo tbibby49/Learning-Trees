@@ -2,6 +2,7 @@ class Student < ApplicationRecord
   has_many :blossom_assessments
   has_many :blossoms, through: :blossom_assessments
   has_many :assessment_items, through: :blossom_assessments
+  has_many :session_goals, dependent: :destroy
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,

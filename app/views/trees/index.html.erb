@@ -1,43 +1,5 @@
 <p style="color: green"><%= notice %></p>
 
-
-
-<button type="button" class="btn btn-outline-primary"><%= link_to "New Tree", new_tree_path %> </button>
-<button type="button" class="btn btn-outline-primary">
-  <%= link_to "Add New Student", teacher_new_student_path(current_teacher) %>
-</button>
-
-
-
-
-
-
-<div class="container">
-  <h1>Trees</h1>
-    <div class="container">
-      <div class="row">
-        <div class="col">
-          <% @trees.each do |tree| %>
-            <%= render tree %>
-    </div>
-      <div class="col-6">
-        <%= link_to "Go to tree", tree_path(tree), class: "btn btn-outline-primary" %>
-        <%= button_to "Delete tree", tree_path(tree), method: :delete, data: { confirm: "Are you sure you want to delete this tree?" }, class: "btn btn-outline-danger" %>
-          <% if flash[:warning] %>
-            <div class="alert alert-warning">
-              <%= flash[:warning] %>
-            </div>
-          <% end %>
-
-          <% if flash[:success] %>
-            <div class="alert alert-success">
-              <%= flash[:success] %>
-            </div>
-          <% end %>
-        
-      </div>
-          <% end %>
-
 <% if teacher_signed_in? %>
   <!-- User is logged in -->
   <p>Welcome, <%= current_teacher.email %></p>
@@ -45,3 +7,58 @@
   <!-- User is not logged in -->
   <p>Please sign in to continue</p>
 <% end %>
+
+<button type="button" class="btn btn-outline-primary"><%= link_to "New Tree", new_tree_path %> </button>
+<button type="button" class="btn btn-outline-primary">
+  <%= link_to "Add New Student", teacher_new_student_path(current_teacher) %>
+</button>
+
+<div class="container">
+  <h1>Trees</h1>
+    <div class="row">
+        <div class="col">
+          <% @trees.each do |tree| %>
+            <div class="accordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <h2><%= tree.name %> </button>
+                  <%= link_to "Go to tree", tree_path(tree), class: "btn btn-outline-primary" %></h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                  <div class="accordion-body">
+                    <p><strong>Description: <%= tree.description %></strong>  </p> 
+
+              <%= form_with url: share_tree_path(tree), method: :post do %>
+                <h6><%= label_tag :teacher_id, "Select a Teacher to Share With:" %>
+                <%= select_tag :teacher_id, options_from_collection_for_select(Teacher.where.not(id: current_teacher.id), :id, :email) %>
+                <%= submit_tag "Share Tree", class: 'btn btn-outline-success' %>  </h6>          
+              <% end %>
+
+              <h6><%= "Teachers shared with: "%>
+              <% tree.shared_teachers.each do |teacher| %>              
+                 <li><%= teacher.email %>
+                <%= button_to "Unshare", unshare_tree_path(tree, teacher_id: teacher.id), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-outline-success" %>             
+              <% end %></h6>
+
+            </div>
+                   
+              <%= button_to "Delete tree", tree_path(tree), method: :delete, data: { confirm: "Are you sure you want to delete this tree?" }, class: "btn btn-outline-danger" %>
+                  <% if flash[:warning] %>
+                    <div class="alert alert-warning">
+                      <%= flash[:warning] %>
+                    </div>
+                  <% end %>
+                  <% if flash[:success] %>
+                    <div class="alert alert-success">
+                      <%= flash[:success] %>
+                    </div>
+                  <% end %>
+            </div>        
+          <% end %>
+        </div>
+    </div>
+</div>
+
+
+
+

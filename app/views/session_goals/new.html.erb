@@ -1,0 +1,32 @@
+<h1>New Session Goal</h1>
+
+<%= form_with(model: @session_goal, url: tree_session_goals_path(@tree.id, student_id: params[:student_id]), local: true) do |f| %>
+  <div class="form-group mb-3">
+    <%= f.label :date, 'Goal Date' %>
+    <%= f.date_field :date, class: 'form-control' %>
+  </div>
+
+  <div class="form-group mb-3">
+    <%= f.label :goal, 'Goal' %>
+    <%= f.text_area :goal, class: 'form-control' %>
+  </div>
+
+  <div class="form-group mb-3">
+    <%= f.label :evidence, 'Evidence' %>
+    <%= f.text_area :evidence, class: 'form-control' %>
+  </div>
+
+  <div class="form-group mb-3">
+    <%= f.label :document, 'Upload Document' %>
+    <%= f.file_field :document, class: 'form-control' %>
+  </div>
+
+  <div class="form-group mb-3">
+    <%= f.label :self_assess, 'Self Assessment' %>
+    <%= f.select :self_assess, options_for_select((1..5).map { |i| [i, i] }), {}, class: 'form-control' %>
+  </div>
+
+  <div class="modal-footer">
+    <%= f.submit 'Set Goal', class: 'btn btn-primary' %>
+  </div>
+<% end %>

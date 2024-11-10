@@ -1,0 +1,104 @@
+<head>
+  <style>
+    .list-group-item {
+      position: relative; /* Make the list item the positioning reference */
+      cursor: pointer; /* Change cursor to indicate it's clickable */
+    }
+
+    .card-hover {
+      display: none;
+      position: absolute;
+      top: 0;
+      right: 100%; /* Adjust positioning to the right of the list item */
+      width: 18rem;
+      z-index: 1000;
+    }
+
+    .list-group-item:hover .card-hover {
+      display: block;
+    }
+
+        /* Background colors for self-assess levels */
+    .self-assess-1 {
+      background-color: #f8fafe; /* Pale blue */
+    }
+
+    .self-assess-2 {
+      background-color: #c0d0fe; /* Slightly darker than 1 */
+    }
+
+    .self-assess-3 {
+      background-color: #678df6; /* Slightly darker than 2 */
+      color: white;
+    }
+
+    .self-assess-4 {
+      background-color: #0c48f1; /* Slightly darker than 3 */
+      color: white;
+    }
+
+    .self-assess-5 {
+      background-color: #0936b5; /* Darkish blue */
+      color: white;
+    }
+
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const listItems = document.querySelectorAll('.list-group-item');
+
+      // Add double-click event listener to each session goal item
+      listItems.forEach(item => {
+        item.addEventListener('dblclick', function () {
+          // Get the goal ID from a data attribute
+          const goalId = this.dataset.goalId;
+
+          // Redirect to the session goal edit page
+          if (goalId) {
+            window.location.href = `session_goals/${goalId}/edit`;
+          }
+        });
+      });
+    });
+  </script>
+</head>
+
+<% if goals.any? %> <!-- Replace @goals with goals -->
+  <div class="card" style="width: 18rem;">
+    <div class="card-header">
+    </div>
+    <ul class="list-group list-group-flush">
+      <% goals.each do |goal| %>
+        <% assess_class = "self-assess-#{goal.self_assess}" %>
+        <li class="list-group-item <%= assess_class %>" data-goal-id="<%= goal.id %>">
+          <strong><%= goal.date %></strong>
+          
+          <!-- Hidden hover card -->
+          <div class="card card-hover">
+            <div class="card-body">
+              <h5 class="card-title"><%= goal.goal %></h5>
+              <h6 class="card-subtitle mb-2 text-body-secondary">Self-assessment: <%= goal.self_assess %></h6>
+              <h6 class="card-text"><%= goal.evidence %></h6>
+
+              <% if goal.document.attached? %>
+                <h6 class="card-text">
+                  Document: <%= link_to goal.document.filename.to_s, url_for(goal.document), target: "_blank" %>
+                </h6>
+              <% else %>
+                <h6 class="card-text">No attachment</h6>
+              <% end %>
+
+              <p>
+                <%= button_to 'Delete', tree_session_goal_path(tree_id: @tree.id, id: goal.id, student_id: @student.id), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger btn-sm" %>
+              </p>
+
+            </div>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% else %>
+  <p>No session goals have been set yet.</p>
+<% end %>
