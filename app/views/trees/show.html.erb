@@ -8,7 +8,50 @@
 <%= link_to 'Add Assessment Item', new_tree_assessment_item_path(@tree), class: "btn btn-primary" %> 
 
 <%= link_to 'Go To Marking Page',tree_marking_path(@tree), class: 'btn btn-primary' %>
+ 
+<button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#assignTreeModal">
+  Assign Tree to Student
+</button>
 
+<%= link_to 'Clone Tree', '#', class: 'btn btn-outline-secondary', data: { bs_toggle: "modal", bs_target: "#cloneTreeModal" } %>
+<div class="modal fade" id="cloneTreeModal" tabindex="-1" aria-labelledby="cloneTreeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cloneTreeModalLabel">Clone Tree</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with(url: create_cloned_tree_tree_path(@tree), method: :post) do |form| %>
+          <div class="form-group">
+            <%= form.label :name, "Enter a new name for the cloned tree:" %>
+            <%= form.text_field :name, class: 'form-control', required: true, autofocus: true %>
+          </div>
+          <%= hidden_field_tag :tree_id, @tree.id %> <!-- Pass the original tree id -->
+          <div class="mt-2">
+            <%= form.submit "Clone Tree", class: 'btn btn-primary' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal Structure -->
+<div class="modal fade" id="assignTreeModal" tabindex="-1" aria-labelledby="assignTreeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="assignTreeModalLabel">Assign Tree to Student</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= render 'add_student' %>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="d-grid gap-2">
     <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -161,7 +204,17 @@
 </table>
 
 
-
+<%= button_to "Delete tree", tree_path(@tree), method: :delete, data: { confirm: "Are you sure you want to delete this tree?" }, class: "btn btn-outline-danger" %>
+<% if flash[:warning] %>
+  <div class="alert alert-warning">
+  <%= flash[:warning] %>
+  </div>
+<% end %>
+<% if flash[:success] %>
+  <div class="alert alert-success">
+    <%= flash[:success] %>
+  </div>
+<% end %>
 
 
 

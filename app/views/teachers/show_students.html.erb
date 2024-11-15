@@ -1,0 +1,43 @@
+<h1>Students</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>Class ID</th>
+      <th>Assigned Trees</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @students.each do |student| %>
+      <tr>
+        <td><%= student.email %></td>
+        <td><%= student.class_id %></td>
+        <td>
+          <% if student.trees.any? %>
+            <ul>
+              <% student.trees.each do |tree| %>
+                <li><%= tree.name %> - <%= tree.description %>
+                  <%= form_with url: remove_from_student_tree_path(tree, student_id: student.id), method: :delete, local: true do |f| %>
+                    <%= f.submit "Remove Tree", class: "btn btn-danger" %>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <span>No trees assigned</span>
+          <% end %>
+        </td>
+        <td>
+          <%= form_with url: update_class_id_teachers_path(student_id: student.id), method: :post, local: true do |f| %>
+            <div class="input-group">
+              <%= f.text_field :class_id, value: student.class_id, placeholder: "Enter Class ID", class: "form-control" %>
+              <%= f.submit "Update", class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

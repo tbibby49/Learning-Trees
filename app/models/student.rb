@@ -9,6 +9,10 @@ class Student < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   belongs_to :teacher
+  has_many :class_ids
+  has_many :student_trees
+  has_many :teachers
+  has_many :trees, through: :student_trees
 
   attribute :teacher_id, :integer
 end

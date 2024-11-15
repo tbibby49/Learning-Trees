@@ -6,7 +6,7 @@ class MarkingController < ApplicationController
     @tree = Tree.find(params[:tree_id])
     @branches = @tree.branches.includes(:blossoms)
     @branch = Branch.find(params[:branch_id]) if params[:branch_id].present?  # Add this line if you need to reference a specific branch
-    @students = Student.all
+    @students = @tree.students.distinct
     @student = Student.find(params[:student_id]) if params[:student_id].present?
     @assessment_item = AssessmentItem.find(params[:assessment_item_id]) if params[:assessment_item_id].present?
     @assessment_items = @tree.assessment_items
@@ -21,6 +21,7 @@ class MarkingController < ApplicationController
   end
 
   def student_view
+    @tree = Tree.find(params[:tree_id])
 
     if params[:student_id].present?
     @student = Student.find(params[:student_id])
@@ -35,9 +36,9 @@ class MarkingController < ApplicationController
     @session_goals = []
   end
 
-    @tree = Tree.find(params[:tree_id])
+  @students = Student.joins(:trees).where(trees: { id: @tree.id }).distinct
+
     @branches = @tree.branches.includes(:blossoms)
-    @students = Student.all
     @assessment_items = @tree.assessment_items
     @session_goal = SessionGoal.new
 

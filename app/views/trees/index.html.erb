@@ -39,20 +39,7 @@
                  <li><%= teacher.email %>
                 <%= button_to "Unshare", unshare_tree_path(tree, teacher_id: teacher.id), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-outline-success" %>             
               <% end %></h6>
-
-            </div>
-                   
-              <%= button_to "Delete tree", tree_path(tree), method: :delete, data: { confirm: "Are you sure you want to delete this tree?" }, class: "btn btn-outline-danger" %>
-                  <% if flash[:warning] %>
-                    <div class="alert alert-warning">
-                      <%= flash[:warning] %>
-                    </div>
-                  <% end %>
-                  <% if flash[:success] %>
-                    <div class="alert alert-success">
-                      <%= flash[:success] %>
-                    </div>
-                  <% end %>
+            </div>                              
             </div>        
           <% end %>
         </div>

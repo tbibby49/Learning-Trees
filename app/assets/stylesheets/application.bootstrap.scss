@@ -1,10 +1,19 @@
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap-icons/font/bootstrap-icons';
 
-.navbar-primary {
-  z-index: 1000; /* Adjust as needed */
+/* Make sure the toggler button is above all other elements */
+.navbar-toggler {
+  position: relative; /* Ensure it's positioned within the z-index stacking context */
+  z-index: 1050 !important;
 }
 
+/* If necessary, apply z-index to the offcanvas itself */
+.offcanvas {
+  position: relative;
+  z-index: 1040; /* Ensure the offcanvas menu stays below the toggler */
+}
+
+/* Adjust secondary navbar if needed */
 .navbar-secondary {
-  z-index: 900; /* Adjust as needed */
+  z-index: 900; /* Make sure it's lower than the toggler */
 }

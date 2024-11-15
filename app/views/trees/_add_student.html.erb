@@ -1,0 +1,13 @@
+<%= form_with(url: assign_student_tree_path(@tree), local: true) do |f| %>
+  <div class="mb-3">
+    <%= f.label :student_email, "Select Student Email" %>
+    <%= f.select :student_email, options_for_select(Student.pluck(:email)), prompt: "Choose Email", class: "form-select" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :class_id, "Select Class ID" %>
+    <%= f.select :class_id, options_for_select(Student.pluck(:class_id).uniq), prompt: "Choose Class ID", class: "form-select" %>
+  </div>
+
+  <%= f.submit "Assign Tree", class: "btn btn-primary" %>
+<% end %>

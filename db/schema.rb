@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_09_213323) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_14_221549) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -111,6 +111,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_09_213323) do
     t.index ["tree_id"], name: "index_session_goals_on_tree_id"
   end
 
+  create_table "student_trees", force: :cascade do |t|
+    t.integer "student_id", null: false
+    t.integer "tree_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["student_id"], name: "index_student_trees_on_student_id"
+    t.index ["tree_id"], name: "index_student_trees_on_tree_id"
+  end
+
   create_table "students", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -120,6 +129,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_09_213323) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "teacher_id", null: false
+    t.string "class_id"
     t.index ["email"], name: "index_students_on_email", unique: true
     t.index ["reset_password_token"], name: "index_students_on_reset_password_token", unique: true
     t.index ["teacher_id"], name: "index_students_on_teacher_id"
@@ -169,6 +179,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_09_213323) do
   add_foreign_key "resources", "blossoms"
   add_foreign_key "session_goals", "students"
   add_foreign_key "session_goals", "trees"
+  add_foreign_key "student_trees", "students"
+  add_foreign_key "student_trees", "trees"
   add_foreign_key "students", "teachers"
   add_foreign_key "tree_shares", "teachers"
   add_foreign_key "tree_shares", "trees"

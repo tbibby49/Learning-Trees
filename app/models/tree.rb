@@ -13,4 +13,6 @@ class Tree < ApplicationRecord
     .or(where(id: TreeShare.where(teacher: teacher).select(:tree_id)))
   }
 
+  has_many :student_trees
+  has_many :students, through: :student_trees
 end

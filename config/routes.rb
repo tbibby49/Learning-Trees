@@ -13,6 +13,12 @@ Rails.application.routes.draw do
     get 'new_student'
     post 'create_student'
     post 'mark_assessment', to: 'marking#mark_assessment'
+    post 'update_class_id', on: :collection
+    member do
+      get 'show_students'
+      get 'edit_students'
+    end
+
   end
 
 
@@ -26,6 +32,16 @@ Rails.application.routes.draw do
 
 
   resources :trees do
+    member do
+      get :clone
+      post :create_cloned_tree
+    end
+
+
+    post 'assign_student', on: :member, to: 'trees#assign_tree_to_student'
+    member do
+      delete 'remove_from_student'
+    end
     post :share, on: :member
     delete :unshare, on: :member
     member do

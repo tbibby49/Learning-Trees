@@ -112,7 +112,13 @@
         <% bottom_position = 50 %> <!-- Starting 100px from the bottom -->
         <% left_position = (600 - totalWidth / 2) + blossom_index * 33 %> <!-- Centered horizontally within the 1000px container -->
         <% placed_positions << {left: left_position, bottom: bottom_position, blossom: blossom} %>
-        <div class="blossom" data-row="<%= blossom.row %>" data-column="<%= blossom.column %>" data-branch-name="<%= blossom.branch.name %>" style="bottom: <%= bottom_position %>px; left: <%= left_position %>px;">
+        <div class="blossom" 
+          data-row="<%= blossom.row %>" 
+          data-column="<%= blossom.column %>"
+          data-branch-id="<%= blossom.branch.id %>" 
+          data-blossom-id="<%= blossom.id %>"  
+          data-branch-name="<%= blossom.branch.name %>" 
+          style="bottom: <%= bottom_position %>px; left: <%= left_position %>px;">
           <div class="blossom-tooltip">
             <strong><%= blossom.name %></strong><br>
             <%= blossom.description %>
