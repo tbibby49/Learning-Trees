@@ -1,0 +1,16 @@
+<h3>Welcome, <%= @student.email %></h3>
+
+<h2>Your Assigned Trees:</h2>
+
+<% if @assigned_trees.any? %>
+  <ul>
+    <% @assigned_trees.each do |tree| %>
+      <li>
+        <%= link_to tree.name, tree_student_view_path(tree.id) %> 
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>You have no assigned trees.</p>
+<% end %>
+

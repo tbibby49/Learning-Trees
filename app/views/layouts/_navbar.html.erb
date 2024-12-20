@@ -8,27 +8,40 @@
     </button>
     <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
       <div class="offcanvas-header" >
-        <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Dark offcanvas</h5>
+        <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Menu</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body">
         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+          
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="<%= trees_path %>">Home</a>
+            <% if teacher_signed_in? %>
+              <%= link_to 'Show Students', show_students_teacher_path(current_teacher), class: 'nav-link' %>
+            <% end %>
           </li>
-          <li class="nav-item">
-            <%= link_to 'Show Students', show_students_teacher_path(current_teacher), class: 'nav-link' %>
+          <% if teacher_signed_in? %>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Trees
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark">
+                <% @trees.each do |tree| %>
+                  <li><a class="dropdown-item" href="<%= tree_path(tree) %>"><%= tree.name %></a></li>
+                <% end %>
+              </ul>
+            </li>
+              <li class="nav-item">
+           <% end %>
+            <% if teacher_signed_in? %>
+             <%= button_to " Teacher Logout", destroy_teacher_session_path, method: :delete %>
+            <% end %>
+          </li>
 
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Trees
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark">
-              <% @trees.each do |tree| %>
-                <li><a class="dropdown-item" href="<%= tree_path(tree) %>"><%= tree.name %></a></li>
-              <% end %>
-            </ul>
+              <li class="nav-item">
+            <% if student_signed_in? %>
+             <%= button_to "Student Logout", destroy_student_session_path, method: :delete %>
+            <% end %>
           </li>
         </ul>
        

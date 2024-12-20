@@ -35,7 +35,7 @@
       display: flex;
       justify-content: center;
       align-items: flex-end; /* Align blossoms to bottom of the container */
-      overflow: hidden; /* Ensure no overflow from absolutely positioned blossoms */
+      overflow: visible; /* Ensure no overflow from absolutely positioned blossoms */
       border: 2px solid #333; /* Border style */
       box-sizing: border-box; /* Include border in the width and height */
     }
@@ -61,7 +61,7 @@
       padding: 5px;
       border-radius: 5px;
       white-space: normal;
-      z-index: 999;
+      z-index: 1000;
       width: 200px;
     }
 
@@ -71,30 +71,19 @@
 
     .branch-line {
       stroke: gray;
-      stroke-width: 10;
+      stroke-width: 15;
       fill: none;
+      z-index: -1;
     }
 
-    .branch-tooltip {
-      display: none;
-      position: absolute;
-      background-color: #333;
-      color: #fff;
-      padding: 5px;
-      border-radius: 5px;
-      white-space: nowrap;
-      z-index: 10;
+    .branch-tooltip-group {
+      pointer-events: none; /* Prevent tooltip from blocking mouse events */
     }
 
-    .branch-line:hover + .branch-tooltip {
-      display: block;
-    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Tree: <%= @tree.name %></h1>
-    
+  <div class="container">    
     <!-- .tree-container where blossoms will be positioned -->
     <div class="tree-container" id="tree-container">
       <svg id="lines-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"></svg>
@@ -115,8 +104,6 @@
         <div class="blossom" 
           data-row="<%= blossom.row %>" 
           data-column="<%= blossom.column %>"
-          data-branch-id="<%= blossom.branch.id %>" 
-          data-blossom-id="<%= blossom.id %>"  
           data-branch-name="<%= blossom.branch.name %>" 
           style="bottom: <%= bottom_position %>px; left: <%= left_position %>px;">
           <div class="blossom-tooltip">
@@ -129,10 +116,8 @@
       <!-- Position other blossoms -->
       <% otherBlossoms.each_with_index do |blossom, index| %>
         <% random_height = rand(85..100) %> <!-- Random height between 85 and 100px -->
-        <% bottom_position = 100 + blossom.column * random_height %> <!-- Dynamic bottom position based on column with random height -->
-        
+        <% bottom_position = 100 + blossom.column * random_height %> <!-- Dynamic bottom position based on column with random height -->        
         <% left_position = 10 + index * 30 %> <!-- Adjusted left position based on index, within 30px from the left -->
-
         <!-- Check for overlaps and adjust position -->
         <% loop do %>
           <% overlapping = placed_positions.any? do |pos| %>
@@ -152,15 +137,14 @@
             style="bottom: <%= bottom_position %>px; left: <%= left_position %>px;">
           <div class="blossom-tooltip">
             <strong><%= blossom.name %></strong><br>
-            <%= blossom.description %>
-            
+            <%= blossom.description %>            
           </div>
         </div>
       <% end %>
     </div>
-  </div>
-
+  </div> 
   
+   
  
   <script>
     document.addEventListener('turbo:load', () => {
@@ -209,7 +193,6 @@
           if (closestEndX !== null && closestEndY !== null) {
             console.log(`Drawing line from (${startX}, ${startY}) to (${closestEndX}, ${closestEndY})`);
 
-            // Determine if it's a C or S curve
             const isCCurve = Math.random() > 0.5;
             const controlPoint1X = isCCurve ? (startX + closestEndX) / 2 : startX;
             const controlPoint1Y = isCCurve ? startY : (startY + closestEndY) / 2;
@@ -223,25 +206,50 @@
             path.setAttribute('data-branch-name', branchName);
             svg.appendChild(path);
 
+            // Create a tooltip group (to group the text and its background)
+            const tooltipGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            tooltipGroup.setAttribute('class', 'branch-tooltip-group');
+            tooltipGroup.style.display = 'none';
+
+            // Create the background rectangle
+            const backgroundRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            backgroundRect.setAttribute('fill', '#fff'); // White background
+            backgroundRect.setAttribute('stroke', '#000'); // Optional black border
+            backgroundRect.setAttribute('rx', '4'); // Rounded corners
+            backgroundRect.setAttribute('ry', '4');
+
+            // Create the text element
             const branchTooltip = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            branchTooltip.className = 'branch-tooltip';
             branchTooltip.setAttribute('x', (startX + closestEndX) / 2);
             branchTooltip.setAttribute('y', (startY + closestEndY) / 2);
-            branchTooltip.setAttribute('fill', '#fff');
+            branchTooltip.setAttribute('fill', '#000'); // Black text
             branchTooltip.setAttribute('font-size', '12');
-            branchTooltip.setAttribute('background', '#333');
+            branchTooltip.setAttribute('text-anchor', 'middle');
+            branchTooltip.setAttribute('dominant-baseline', 'middle');
             branchTooltip.textContent = branchName;
-            branchTooltip.style.display = 'none';
-            svg.appendChild(branchTooltip);
 
-            path.addEventListener('mouseover', function() {
-              branchTooltip.style.display = 'block';
-            });
+            // Append text and background to the tooltip group
+            tooltipGroup.appendChild(backgroundRect);
+            tooltipGroup.appendChild(branchTooltip);
+            svg.appendChild(tooltipGroup);
 
-            path.addEventListener('mouseout', function() {
-              branchTooltip.style.display = 'none';
+            // Adjust the background rectangle size based on text size
+            const bbox = branchTooltip.getBBox();
+            backgroundRect.setAttribute('x', bbox.x - 4); // Padding
+            backgroundRect.setAttribute('y', bbox.y - 2);
+            backgroundRect.setAttribute('width', bbox.width + 8); // Padding
+            backgroundRect.setAttribute('height', bbox.height + 4);
+
+            // Show/Hide tooltip on hover
+            path.addEventListener('mouseover', function () {
+              tooltipGroup.style.display = 'block';
+            });           
+
+            path.addEventListener('mouseout', function () {
+              tooltipGroup.style.display = 'none';
             });
           }
+
         });
       }
 
@@ -249,7 +257,7 @@
       window.addEventListener('resize', drawLines);
     });
 
-   document.addEventListener('DOMContentLoaded', function() {
+   document.addEventListener('turbo:load', () => {
       const blossoms = document.querySelectorAll('.blossom');
       const treeId = document.querySelector('meta[name="tree-id"]').content; // Get tree ID from meta tag
 

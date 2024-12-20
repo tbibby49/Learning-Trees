@@ -1,0 +1,46 @@
+<h1>Existing results for Tree: <%= @tree.name %></h1>
+<p>The tree cannot be deleted because the following students have assessment results associated with it:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Student</th>
+      <th>Assessment Item</th>
+      <th>Blossom</th>
+      <th>Branch</th>
+      <th>Stage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @assessments.each do |assessment| %>
+      <tr>
+        <td><%= assessment.student.email %></td>
+        <td><%= assessment.assessment_item.name %></td>
+        <td><%= assessment.blossom.name %></td>
+        <td><%= assessment.branch.name %></td>
+        <td><%= assessment.stage %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "Back to Trees", trees_path, class: "btn btn-primary" %>
+
+
+<div>
+  <% @assessments.group_by(&:student).each do |student, assessments| %>
+    <tr>
+      <td><%= student.email %></td>
+      <td colspan="4">
+        <%= button_to "Clear Stages for #{student.email}", 
+                    clear_assessments_tree_path(@tree, student_id: student.id), 
+                    method: :delete, 
+                    data: { confirm: "Are you sure you want to clear all stages for this student?" }, 
+                    class: "btn btn-danger btn-sm" %>
+      </td>
+    </tr>
+
+  
+  <% end %>
+  </div>
+

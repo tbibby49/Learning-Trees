@@ -1,10 +1,17 @@
 class StudentsController < ApplicationController
-  before_action :authenticate_teacher!
+  before_action :authenticate_teacher!, only: [:create]
+  before_action :authenticate_student!
+
   before_action :log_params, only: [:create]
 
   def new
     @student = Student.new
     Rails.logger.debug "New action called"
+  end
+
+  def dashboard
+    @student = current_student
+    @assigned_trees = @student.trees # Retrieves all trees assigned to the current student
 
   end
 
@@ -19,6 +26,12 @@ class StudentsController < ApplicationController
       Rails.logger.error "Errors: #{@student.errors.full_messages.join(', ')}"
       render :new
     end
+  end
+
+  def marking_page
+    @student = current_student
+    @assessment_item = AssessmentItem.find(params[:assessment_item_id])
+    @branches = Tree.find(params[:tree_id]).branches
   end
 
   private

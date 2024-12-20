@@ -16,14 +16,84 @@
   <%= f.submit 'Create Assessment Item', class: 'btn btn-primary' %>
 <% end %>
 
-<h2>Assessment Items</h2>
-<ul>
-  <% @assessment_items.each do |assessment_item| %>
-    <li>
-      <%= assessment_item.name %>
-      <%= button_to 'Delete', tree_assessment_item_path(assessment_item, tree_id: @tree.id), method: :delete, data: { confirm: 'Are you sure?' } %>
-
+<ul class="list-group" data-controller="sortable" data-sortable-url-value="<%= assessment_items_path(tree_id: @tree.id) %>">
+  <% @assessment_items.order(:order).each do |assessment_item| %>
+    <li class="assessment_item list-group-item d-flex justify-content-between align-items-center" data-id="<%= assessment_item.id %>" draggable="true">
+      <span><%= "#{assessment_item.order}. #{assessment_item.name}" %></span>
+      <%= button_to 'Delete', tree_assessment_item_path(assessment_item, tree_id: @tree.id), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-sm btn-danger' %>
     </li>
   <% end %>
 </ul>
 
+<script>
+  document.addEventListener('turbo:load', () => {
+    const assessmentItems = document.querySelectorAll('.assessment_item');
+    let draggedItem = null;
+
+    // Add event listeners to each item
+    assessmentItems.forEach(item => {
+      item.addEventListener('dragstart', dragStart);
+      item.addEventListener('dragover', allowDrop);
+      item.addEventListener('dragend', dragEnd);
+    });
+
+    // When drag starts
+    function dragStart(event) {
+      draggedItem = event.target;
+      event.dataTransfer.setData('text/plain', draggedItem.getAttribute('data-id')); // Store item ID
+      console.log(`Started dragging ${draggedItem.getAttribute('data-id')}`);
+    }
+
+    // When dragging over a valid drop target
+    function allowDrop(event) {
+      event.preventDefault(); // Allow the drop by preventing the default behavior
+      console.log('Dragged over item');
+    }
+
+    // When drag ends
+    function dragEnd(event) {
+      console.log(`Dropped item ${draggedItem.getAttribute('data-id')}`);
+      
+      // Get all items after the drag ends
+      const listItems = document.querySelectorAll('.assessment_item');
+      const orderArray = Array.from(listItems).map((item, index) => ({
+        id: item.getAttribute('data-id'),
+        order: index + 1, // The new order based on the position in the list
+      }));
+
+      // Send the new order to the server
+      updateOrderOnServer(orderArray);
+    }
+
+    // Send the updated order to the server
+   function updateOrderOnServer(orderArray) {
+    fetch('<%= tree_assessment_items_path(tree_id: @tree.id) %>/update_order', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        order: orderArray
+      })
+    })
+    .then(response => {
+      // Log the response to see what's coming back from the server
+      console.log('Response:', response);
+      
+      if (!response.ok) {
+        return response.text().then(text => { // Attempt to get response body text
+          throw new Error(text || 'Failed to update order');
+        });
+      }
+      return response.json(); // Assuming a JSON response
+    })
+    .then(data => {
+      console.log('Order updated successfully', data); // If JSON is returned
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    })
+  }
+  });
+</script>

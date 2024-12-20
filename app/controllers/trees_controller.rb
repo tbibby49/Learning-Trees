@@ -1,6 +1,17 @@
 class TreesController < ApplicationController
   before_action :set_tree, only: %i[ show edit update destroy ]
-  before_action :authenticate_teacher!
+  before_action :authenticate_user!
+
+  def authenticate_user!
+    # Check if either teacher or student is signed in
+    if teacher_signed_in?
+      authenticate_teacher!
+    elsif student_signed_in?
+      authenticate_student!
+    else
+      redirect_to new_user_session_path, alert: "You must be signed in to view this page."
+    end
+  end
 
   # GET /trees or /trees.json
   def branch_builder
@@ -67,11 +78,19 @@ class TreesController < ApplicationController
 
   # DELETE /trees/1 or /trees/1.json
   def destroy
-    @tree.destroy!
+    @tree = Tree.find(params[:id])
 
-    respond_to do |format|
-      format.html { redirect_to trees_url, notice: "Tree was successfully destroyed." }
-      format.json { head :no_content }
+    # Check for associated BlossomAssessment records
+    associated_assessments = BlossomAssessment.joins(:branch)
+                                               .where(branches: { tree_id: @tree.id })
+
+    if associated_assessments.exists?
+      flash[:alert] = "Cannot delete tree because associated assessments exist."
+      redirect_to assessments_tree_path(@tree) # Redirect to a custom page
+    else
+      @tree.destroy
+      flash[:notice] = "Tree deleted successfully."
+      redirect_to trees_path
     end
   end
 
@@ -187,6 +206,34 @@ def create_cloned_tree
     redirect_to tree_path(cloned_tree), notice: "Tree cloned successfully!"
   end
 end
+
+  def assessments
+    @tree = Tree.find(params[:id])
+    @assessments = BlossomAssessment.joins(:branch)
+                                    .where(branches: { tree_id: @tree.id })
+                                    .includes(:student, :assessment_item, :blossom)
+  end
+
+  def clear_assessments
+    @tree = Tree.find(params[:id])
+    @student = Student.find(params[:student_id]) if params[:student_id]
+
+    if @student
+      # Clear all BlossomAssessments for the specific student and tree
+      BlossomAssessment.joins(:branch)
+                       .where(branches: { tree_id: @tree.id }, student: @student)
+                       .delete_all
+
+      redirect_to assessments_tree_path(@tree), notice: "Successfully cleared assessments for #{@student.email}."
+    else
+      # Clear all BlossomAssessments for the entire tree
+      BlossomAssessment.joins(:branch)
+                       .where(branches: { tree_id: @tree.id })
+                       .delete_all
+
+      redirect_to trees_path, notice: "Successfully cleared all assessments associated with the tree."
+    end
+  end
 
 
   private

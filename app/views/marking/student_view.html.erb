@@ -85,46 +85,39 @@
     }
   </style> 
 </head>
-
 <body>
-<div class="container">   
-    <h1><%= @tree.name %></h1>
-    <div class="row align-items-start">
-      
-  <div class="col-4">    
-    <%= form_tag({ controller: 'marking', action: 'student_view', tree_id: @tree.id }, method: :get) do %>
-      <div class="form-group">
-        <%= select_tag 'student_id', 
-          options_for_select([['Student name', '']] + @students.map { |s| [s.email, s.id] }, params[:student_id]), 
+<div class= 'container'>
+<div class="col 2">   
+  <div class="row align-items-start">     
+      <%= form_tag({ controller: 'marking', action: 'student_view', tree_id: @tree.id }, method: :get) do %>        
+        <% if current_teacher %>
+          <div class="form-group">
+            <%= select_tag 'student_id', 
+              options_for_select([['Student name', '']] + @students.map { |s| [s.email, s.id] }, params[:student_id]), 
+              class: 'form-select' %>
+          </div>
+        <% else %>
+          <div class="form-group">
+            <%= hidden_field_tag 'student_id', current_student.id %>
+          </div>
+        <% end %>     
+
+        <div class="form-group">
+          <%= select_tag 'assessment_item_id', 
+          options_for_select([['Assessment item', '']] + @assessment_items.map { |ai| [ai.name, ai.id] }, params[:assessment_item_id]), 
           class: 'form-select' %>
-    </div>
-  
-    <div class="form-group">
-      <%= select_tag 'assessment_item_id', 
-      options_for_select([['Assessment item', '']] + @assessment_items.map { |ai| [ai.name, ai.id] }, params[:assessment_item_id]), 
-      class: 'form-select' %>
-    </div>
+        </div>
 
-      <%= submit_tag 'Show', class: 'btn btn-primary' %>
-    <% end %>
-   
-    </div>
-
-    <div class="col-6">
-      <%= render 'total_points_table' %>
-    </div>
-
-    <div class = "col-2">
-      <%= render 'grade_cutoffs'%>
-    </div>
-</div>
-
+        <%= submit_tag 'Show', class: 'btn btn-primary' %>
+      <% end %>
+  </div> 
+ </div>
 
 <div class="tree-goals-container">
   <div class="col"><%= render 'display_tree' %></div>
-  <div class="col-sm-3"><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sessionGoalModal" data-goal-type="Lesson">
+    <div class="col-sm-3"><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sessionGoalModal" data-goal-type="Lesson">
     Set New Lesson Goal
-  </button>
+    </button>
       <!-- Modal Structure -->
     <div class="modal fade" id="sessionGoalModal" tabindex="-1" aria-labelledby="sessionGoalModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -135,7 +128,8 @@
           </div>          
           <div class="modal-body">
             <%= form_with(model: @session_goal, url: tree_session_goals_path(@tree), local: true) do |f| %>
-              <%= f.hidden_field :student_id, value: params[:student_id] %>
+              <%= f.hidden_field :student_id, value: current_teacher ? params[:student_id] : current_student.id %>
+
               <%= f.hidden_field :goal_type, id: 'goal_type' %>              
               <div class="form-group mb-3">
                 <%= f.label :date, 'Goal Date' %>
@@ -166,7 +160,7 @@
         </div>
       </div>
     </div>
-      <!-- Lesson Goals Column -->
+      
     <div class="col-sm-6">
         <h4>Lesson Goals</h4>
         <%= render partial: "session_goal_show", locals: { goals: @session_goals.where(goal_type: 'Lesson') } %>
@@ -183,6 +177,13 @@
       <%= render partial: "session_goal_show", locals: { goals: @session_goals.where(goal_type: 'Homework') } %>
     </div>    
   </div>
+</div>
+<div class="col-6">
+  <%= render 'total_points_table' %>
+</div>
+
+<div class = "col-2">
+  <%= render 'grade_cutoffs'%>
 </div>
 
 <div class="branches-container">
@@ -207,19 +208,28 @@
   <% end %>      
 </div>
 
-
   <script>
     document.addEventListener('turbo:load', () => {
       const sessionGoalModal = document.getElementById('sessionGoalModal');
       const goalTypeField = document.getElementById('goal_type');
 
-      // When the modal is about to be shown
-      sessionGoalModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;  // Button that triggered the modal
-        const goalType = button.getAttribute('data-goal-type');  // Extract info from data-goal-type attribute
-        goalTypeField.value = goalType;  // Set hidden field value to the goal type
-      });
-    });    
+      if (sessionGoalModal && goalTypeField) {
+        sessionGoalModal.addEventListener('show.bs.modal', function(event) {
+          const button = event.relatedTarget;  // Button that triggered the modal
+          const goalType = button ? button.getAttribute('data-goal-type') : null;
+
+          if (goalType) {
+            console.log(`Setting goal_type to: ${goalType}`);
+            goalTypeField.value = goalType;  // Set hidden field value
+          } else {
+            console.warn('No data-goal-type found on the triggering button.');
+          }
+        });
+      } else {
+        console.error('Modal or goal_type field not found in the DOM.');
+      }
+    }); 
   </script>
+  
   </body>
 </html>

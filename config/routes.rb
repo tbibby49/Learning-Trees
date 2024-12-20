@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'home/index'
   devise_for :students, controllers: {
     registrations: 'students/registrations'
   }
@@ -7,7 +8,7 @@ Rails.application.routes.draw do
   resources :students, only: [:new, :create, :show]
   resources :assessment_items, only: [:new, :create, :index]
 
-  root "trees#index"
+  root "home#index"
 
   resources :teachers do
     get 'new_student'
@@ -18,18 +19,22 @@ Rails.application.routes.draw do
       get 'show_students'
       get 'edit_students'
     end
-
+    get 'marking_page', to: 'teachers#marking_page'
   end
 
-
+  resources :students do
+    member do
+      get 'dashboard'
+    end
+    get 'marking_page', to: 'students#marking_page'
+  end
 
   resources :marking do
     collection do
       get 'index'
     end
+    get 'student_view', on: :member
   end
-
-
 
   resources :trees do
     member do
@@ -37,23 +42,38 @@ Rails.application.routes.draw do
       post :create_cloned_tree
     end
 
+    member do
+      post 'marking/get_stage_data', to: 'marking#get_stage_data'
+    end
+
+    member do
+      get :assessments
+      delete :clear_assessments
+    end
 
     post 'assign_student', on: :member, to: 'trees#assign_tree_to_student'
+
     member do
       delete 'remove_from_student'
     end
+
     post :share, on: :member
     delete :unshare, on: :member
-    member do
-      get 'student_view', to: 'marking#student_view'
-    end
+
     member do
       post :update_cutoffs
     end
+
     get 'marking', to: 'marking#index'
+
     get '/marking/student_view', to: 'marking#student_view', as: 'student_view'
+
     post 'marking/save_branch_blossom_stages', to: 'marking#save_branch_blossom_stages'
-    resources :assessment_items, only: [:new, :create, :show, :destroy]
+
+    resources :assessment_items do
+      patch :update_order, on: :collection
+    end
+
     resources :branches do
       resources :blossoms do
         collection do
@@ -62,8 +82,11 @@ Rails.application.routes.draw do
         resources :resources
       end
     end
+
     resources :session_goals
+
   end
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

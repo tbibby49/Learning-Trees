@@ -6,6 +6,7 @@ class TeachersController < ApplicationController
     @student = Student.new
   end
 
+
   def create_student
     @student = current_teacher.students.build(student_params)
 
@@ -21,8 +22,11 @@ class TeachersController < ApplicationController
   end
 
   def show_students
-    @students = current_teacher.students
-
+    if current_teacher
+      @students = current_teacher.students
+    else
+      redirect_to root_path, notice: 'Please log in first.'
+    end
   end
 
   def update_class_id
@@ -39,4 +43,5 @@ class TeachersController < ApplicationController
   def student_params
     params.require(:student).permit(:email, :password, :password_confirmation)
   end
+
 end

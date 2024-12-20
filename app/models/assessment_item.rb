@@ -7,4 +7,13 @@ class AssessmentItem < ApplicationRecord
   has_one_attached :document
 
   validates :name, presence: true
+
+  before_create :set_default_order
+
+  private
+
+  def set_default_order
+    self.order ||= tree.assessment_items.maximum(:order).to_i + 1
+  end
+
 end

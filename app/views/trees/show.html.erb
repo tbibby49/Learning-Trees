@@ -2,18 +2,15 @@
 <div style="padding: 10px;">
 
 
-<h1><%= @tree.name %></h1>
-
-
 <%= link_to 'Add Assessment Item', new_tree_assessment_item_path(@tree), class: "btn btn-primary" %> 
 
-<%= link_to 'Go To Marking Page',tree_marking_path(@tree), class: 'btn btn-primary' %>
+<%= link_to 'Go To Marking Page',tree_marking_path(@tree), class: 'btn btn-secondary' %>
  
-<button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#assignTreeModal">
+<button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#assignTreeModal">
   Assign Tree to Student
 </button>
 
-<%= link_to 'Clone Tree', '#', class: 'btn btn-outline-secondary', data: { bs_toggle: "modal", bs_target: "#cloneTreeModal" } %>
+<%= link_to 'Clone Tree', '#', class: 'btn btn-success', data: { bs_toggle: "modal", bs_target: "#cloneTreeModal" } %>
 <div class="modal fade" id="cloneTreeModal" tabindex="-1" aria-labelledby="cloneTreeModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -215,6 +212,8 @@
     <%= flash[:success] %>
   </div>
 <% end %>
+
+
 
 
 

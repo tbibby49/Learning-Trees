@@ -1,5 +1,5 @@
 
-<%= link_to 'Back', tree_branch_path(@tree, @branch) , class: 'btn btn-secondary'%>
+
 
 <div class="container">
 <div class="accordion" id="accordionExample">
@@ -33,6 +33,7 @@
         <%= form.text_area :description, class: "form-control" %>
       </div>
 
+
       <!-- Add other fields as needed -->
 
       <div class="actions">
@@ -60,7 +61,7 @@
             <div class="card-body">
               <h5 class="card-title"><%= resource.name %></h5>
             
-              <%= link_to 'Edit', edit_tree_branch_blossom_resource_path(@tree, @branch, @blossom, resource), class: 'btn btn-primary' %>
+              <%= link_to 'Build and edit resource', edit_tree_branch_blossom_resource_path(@tree, @branch, @blossom, resource), class: 'btn btn-primary' %>
             </div>
           </div>
         </div>
@@ -73,7 +74,7 @@
 
 <div class="container">
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-      Add a resource
+      Add a resource page
     </button>
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -93,6 +94,8 @@
                   <%= form.label :description %>
                   <%= form.text_area :description %>
                 </div>
+
+                
                 <%= form.submit "Add resource", class: "btn btn-primary"%>
               <% end %>
             </div>

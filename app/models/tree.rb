@@ -5,7 +5,7 @@ class Tree < ApplicationRecord
   has_many :session_goals, dependent: :destroy
 
   has_many :tree_shares, dependent: :destroy
-  has_many :shared_teachers, through: :tree_shares, source: :teacher
+  has_many :shared_teachers, through: :tree_shares, source: :teacher, dependent: :destroy
 
   # Scope to retrieve trees accessible by a given teacher
   scope :accessible_by, ->(teacher) {
@@ -13,6 +13,6 @@ class Tree < ApplicationRecord
     .or(where(id: TreeShare.where(teacher: teacher).select(:tree_id)))
   }
 
-  has_many :student_trees
-  has_many :students, through: :student_trees
+  has_many :student_trees, dependent: :destroy
+  has_many :students, through: :student_trees, dependent: :destroy
 end

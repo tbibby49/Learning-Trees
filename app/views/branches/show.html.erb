@@ -209,7 +209,9 @@
           background-color: #eee;
         }
       </style>
+      
       <script>
+      document.addEventListener('turbo:load', () => {
         function handleDoubleClick(event) {
           const blossom = event.currentTarget;
           const blossomId = blossom.id.replace('blossom_', '');
@@ -227,6 +229,7 @@
         document.querySelectorAll('.blossom').forEach(blossom => {
           blossom.addEventListener('dblclick', handleDoubleClick);
         });
+      })
       </script>
     </div>
   </div>

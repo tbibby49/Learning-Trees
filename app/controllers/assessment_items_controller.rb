@@ -19,7 +19,7 @@ class AssessmentItemsController < ApplicationController
     Rails.logger.debug "Tree ID: #{@tree.id}"
 
     if @assessment_item.save
-      redirect_to tree_path(@tree), notice: 'Assessment item was successfully created.'
+      redirect_to tree_assessment_item_path(@tree), notice: 'Assessment item was successfully created.'
     else
       Rails.logger.error "Errors: #{@assessment_item.errors.full_messages}"
       @assessment_items = @tree.assessment_items
@@ -30,6 +30,15 @@ class AssessmentItemsController < ApplicationController
   def destroy
     @assessment_item.destroy!
     redirect_to tree_path(@tree), notice: 'Assessment item was successfully deleted.'
+  end
+
+  def update_order
+    order_data = params[:order] # This will be the array of IDs and order values
+    order_data.each do |item|
+      assessment_item = AssessmentItem.find(item[:id])
+      assessment_item.update(order: item[:order]) # Update each assessment item's order
+    end
+    render json: { status: 'success' }
   end
 
   private
@@ -43,6 +52,6 @@ class AssessmentItemsController < ApplicationController
   end
 
   def assessment_item_params
-    params.require(:assessment_item).permit(:name, :document, :tree_id)
+    params.require(:assessment_item).permit(:name, :document, :tree_id, :order)
   end
 end

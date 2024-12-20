@@ -1,5 +1,18 @@
 class MarkingController < ApplicationController
-  before_action :authenticate_teacher!
+   before_action :authenticate_user!
+
+  def authenticate_user!
+    # Check if either teacher or student is signed in
+    if teacher_signed_in?
+      authenticate_teacher!
+    elsif student_signed_in?
+      authenticate_student!
+    else
+      redirect_to new_user_session_path, alert: "You must be signed in to view this page."
+    end
+  end
+
+
   helper MarkingHelper
 
   def index
@@ -10,6 +23,8 @@ class MarkingController < ApplicationController
     @student = Student.find(params[:student_id]) if params[:student_id].present?
     @assessment_item = AssessmentItem.find(params[:assessment_item_id]) if params[:assessment_item_id].present?
     @assessment_items = @tree.assessment_items
+
+
     @blossom_assessment = BlossomAssessment.find_by(student_id: params[:student_id], assessment_item_id: params[:assessment_item_id])
     @blossom_assessment ||= BlossomAssessment.new(student_id: params[:student_id], assessment_item_id: params[:assessment_item_id])
 
@@ -30,7 +45,7 @@ class MarkingController < ApplicationController
       hash[assessment.blossom_id] = assessment.stage
     end
     @session_goals = SessionGoal.where(student: @student, tree: @tree)
-  else
+    else
     # Handle the case where no student is selected yet
     @blossom_stages = {}
     @session_goals = []
@@ -55,7 +70,14 @@ class MarkingController < ApplicationController
 
   end
 
+  def get_stage_data
+    student_id = params[:student_id]
+    assessment_item_id = params[:assessment_item_id]
 
+    @blossom_assessments = BlossomAssessment.where(student_id: student_id, assessment_item_id: assessment_item_id)
+
+    render json: { blossom_assessments: @blossom_assessments }
+  end
 
   def save_branch_blossom_stages
     student_id = params[:student_id]

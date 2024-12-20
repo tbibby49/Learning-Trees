@@ -1,8 +1,8 @@
 class BlossomAssessment < ApplicationRecord
-  belongs_to :student
+  belongs_to :student, dependent: :destroy
   belongs_to :assessment_item
-  belongs_to :blossom
-  belongs_to :branch
+  belongs_to :blossom, dependent: :destroy
+  belongs_to :branch, dependent: :destroy
 
   validates :stage, presence: true, inclusion: { in: ['Not Evident', 'Partially Demonstrated', 'Fully Demonstrated'] }
   validates :branch_id, presence: true

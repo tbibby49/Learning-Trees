@@ -4,6 +4,7 @@
   <!-- Include necessary meta tags and CSS/JS dependencies -->
 </head>
 <body>
+ 
 
   <!-- Secondary Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top navbar-secondary" style="top: 56px;">
@@ -15,27 +16,22 @@
             <%= form_tag(tree_marking_save_branch_blossom_stages_path(@tree), method: :post, style: 'display: inline-block;') do %>
               <div class="form-group" style="display: inline-block; margin-right: 20px;">
                 <%= label_tag 'student_id', 'Select Student:', style: 'display: block;' %>
-                <%= select_tag 'student_id', options_for_select(@students.map { |s| [s.email, s.id] }), class: 'form-control', style: 'display: inline-block; width: auto;', id: 'student_id' %>
+                <%= select_tag 'student_id', options_for_select([['Student email','']] + @students.map { |s| [s.email, s.id] }), class: 'form-control', style: 'display: inline-block; width: auto;', id: 'student_id' %>
                 <%= hidden_field_tag 'student_id', params[:student_id] %>
                 
               </div>
 
              <div class="form-group" style="display: inline-block; margin-right: 20px;">
               <%= label_tag 'assessment_item_id', 'Select Assessment Item:', style: 'display: block;' %>
-              <%= select_tag 'assessment_item_id', options_for_select(@assessment_items.map { |ai| [ai.name, ai.id] }, params[:assessment_item_id]), class: 'form-control', style: 'display: inline-block; width: auto;', id: 'assessment_item_id' %>
+              <%= select_tag 'assessment_item_id', options_for_select([['Assessment item','']] + @assessment_items.map { |ai| [ai.name, ai.id] }, params[:assessment_item_id]), class: 'form-control', style: 'display: inline-block; width: auto;', id: 'assessment_item_id' %>
               <%= hidden_field_tag 'assessment_item_id', params[:assessment_item_id] %>
             </div>
-            <%= link_to 'View Student Trees', "#{tree_marking_path(@tree)}/student_view", class: 'btn btn-outline-primary' %>
-
-
           <% end %>
           </div>
-
-
         </div>
         <div class="col-12 mt-2">
           <% @branches.each do |branch| %>
-            <button type="button" class="btn btn-primary me-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvas<%= branch.id %>" >
+            <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvas<%= branch.id %>" >
               <%= branch.name %> Blossoms
             </button>
           <% end %>
@@ -44,39 +40,40 @@
     </div>
   </nav>
 
-
 <div class="container mt-5 pt-5">
   <div id="notification_area" class="mt-4"></div>
-
   
   <!-- Offcanvas for each branch -->
   <% @branches.each do |branch| %>
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas<%= branch.id %>" aria-labelledby="offcanvas<%= branch.id %>Label">
-      <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvas<%= branch.id %>Label"><%= branch.name %> Blossoms</h5>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas<%= branch.id %>" aria-labelledby="offcanvas<%= branch.id %>Label" style="top: 40px;">
+      <div class="offcanvas-header" >
+        <h5 class="offcanvas-title" id="offcanvas<%= branch.id %>Label"><%= branch.name %></h5>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body">
-        <% branch.blossoms.each do |blossom| %>
-          <div class="card mb-3">
-            <div class="card-body">
-              <h5 class="card-title"><%= blossom.name %></h5>
-              <p class="card-text"><%= blossom.description %></p>
-              <div class="form-check form-check-inline">
-                <%= radio_button_tag "blossom_#{blossom.id}_stage", 'Not Evident', false, class: 'form-check-input', data: { blossom_id: blossom.id } %>
-                <%= label_tag "blossom_#{blossom.id}_stage_not_evident", 'Not Evident', class: 'form-check-label' %>
-              </div>
-              <div class="form-check form-check-inline">
-                <%= radio_button_tag "blossom_#{blossom.id}_stage", 'Partially Demonstrated', false, class: 'form-check-input', data: { blossom_id: blossom.id } %>
-                <%= label_tag "blossom_#{blossom.id}_stage_partially_demonstrated", 'Partially Demonstrated', class: 'form-check-label' %>
-              </div>
-              <div class="form-check form-check-inline">
-                <%= radio_button_tag "blossom_#{blossom.id}_stage", 'Fully Demonstrated', false, class: 'form-check-input', data: { blossom_id: blossom.id } %>
-                <%= label_tag "blossom_#{blossom.id}_stage_fully_demonstrated", 'Fully Demonstrated', class: 'form-check-label' %>
-              </div>
+       <% branch.blossoms.each do |blossom| %>
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title"><%= blossom.name %></h5>
+            <p class="card-text"><%= blossom.description %></p>
+
+            <% stage = @blossom_assessments[blossom.id] %>
+
+            <div class="form-check form-check-inline">
+              <%= radio_button_tag "blossom_#{blossom.id}_stage", 'Not Evident', stage == 'Not Evident', class: 'form-check-input', data: { blossom_id: blossom.id } %>
+              <%= label_tag "blossom_#{blossom.id}_stage_not_evident", 'Not Evident', class: 'form-check-label' %>
+            </div>
+            <div class="form-check form-check-inline">
+              <%= radio_button_tag "blossom_#{blossom.id}_stage", 'Partially Demonstrated', stage == 'Partially Demonstrated', class: 'form-check-input', data: { blossom_id: blossom.id } %>
+              <%= label_tag "blossom_#{blossom.id}_stage_partially_demonstrated", 'Partially Demonstrated', class: 'form-check-label' %>
+            </div>
+            <div class="form-check form-check-inline">
+              <%= radio_button_tag "blossom_#{blossom.id}_stage", 'Fully Demonstrated', stage == 'Fully Demonstrated', class: 'form-check-input', data: { blossom_id: blossom.id } %>
+              <%= label_tag "blossom_#{blossom.id}_stage_fully_demonstrated", 'Fully Demonstrated', class: 'form-check-label' %>
             </div>
           </div>
-        <% end %>
+        </div>
+      <% end %>
         <!-- Submit button -->
         <button type="button" class="btn btn-primary" onclick="saveBranch(<%= branch.id %>)">Save Blossom Stages</button>
       </div>
@@ -130,31 +127,91 @@
       // Access the saved_blossoms array from the response
       const saved_blossoms = data.saved_blossoms;
 
-      if (Array.isArray(saved_blossoms)) {
-        const notificationArea = document.querySelector('#notification_area');
-        notificationArea.innerHTML = saved_blossoms.map(blossom_assessment => `
-          <div class="card mb-3">
-            <div class="card-body">
-              <h5 class="card-title">Blossom Assessment</h5>
-              <p class="card-text">Student ID: ${blossom_assessment.student_id}</p>
-              <p class="card-text">Assessment Item ID: ${blossom_assessment.assessment_item_id}</p>
-              <p class="card-text">Blossom ID: ${blossom_assessment.blossom_id}</p>
-              <p class="card-text">Branch: ${blossom_assessment.branch_id}</p>
-              <p class="card-text">Stage: ${blossom_assessment.stage}</p>
-            </div>
-          </div>
-        `).join('');
-      } else {
-        console.error('Unexpected response format:', saved_blossoms);
-        throw new Error('Unexpected response format');
-      }
+     }).then(data => {
+      // Close the offcanvas after successful save
+      const offcanvasElement = new bootstrap.Offcanvas(offcanvas);
+      offcanvasElement.hide(); // Hide the offcanvas
+
     }).catch(error => {
       console.error('Error saving branch stages:', error);
     });
   }
 </script>
 
+<script>
+  document.addEventListener('turbo:load', () => {
+  console.log('Turbo:load event triggered. Looking for data...');
+    const studentDropdown = document.querySelector('#student_id');
+    const assessmentDropdown = document.querySelector('#assessment_item_id');
+    const notificationArea = document.querySelector('#notification_area');
 
+    function fetchAndDisplayStageData() {
+      const studentId = studentDropdown.value;
+      const assessmentItemId = assessmentDropdown.value;
+
+      // Ensure both dropdowns have a selected value
+      if (!studentId || !assessmentItemId) {
+        notificationArea.innerHTML = ''; // Clear the area if selection is incomplete
+        return;
+      }
+
+      fetch(`/trees/<%= @tree.id %>/marking/get_stage_data`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        },
+        body: JSON.stringify({ student_id: studentId, assessment_item_id: assessmentItemId }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch stage data');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.blossom_assessments && Array.isArray(data.blossom_assessments)) {
+            notificationArea.innerHTML = data.blossom_assessments
+              .map((assessment) => `
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <h5 class="card-title">${assessment.blossom_name || 'Blossom'} Assessment</h5>
+                    <p class="card-text">Stage: ${assessment.stage || 'No stage set'}</p>
+                  </div>
+                </div>
+              `)
+              .join('');         
+       
+          if (data.blossom_assessments) {
+            // Update radials based on fetched data
+            data.blossom_assessments.forEach(assessment => {
+              const blossomId = assessment.blossom_id;
+              const stage = assessment.stage;
+
+              document.querySelectorAll(`input[name="blossom_${blossomId}_stage"]`).forEach(radio => {
+                radio.checked = radio.value === stage;
+                console.log(`Updating radio buttons for Blossom ID: ${blossomId}, Stage: ${stage}`);
+              });
+            });
+          }          
+            
+          } else {
+            notificationArea.innerHTML = '<p>No stage data found for the selected student and assessment item.</p>';
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching stage data:', error);
+          notificationArea.innerHTML = '<p>Error fetching data. Please try again.</p>';
+        });
+    }
+
+    // Add event listeners to dropdowns
+    studentDropdown.addEventListener('change', fetchAndDisplayStageData);
+    assessmentDropdown.addEventListener('change', fetchAndDisplayStageData);
+  });  
+</script>
 <%= render 'student_work_example' %>
+<%= link_to 'View Student Trees', "#{tree_marking_path(@tree)}/student_view", class: 'btn btn-primary' %>
+
 
 </html>
