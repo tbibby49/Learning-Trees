@@ -7,18 +7,10 @@
     
     <%= javascript_importmap_tags %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-       <!-- Scripts at the end of the body -->
     <%= javascript_include_tag "https://code.jquery.com/jquery-3.5.1.min.js", crossorigin: "anonymous" %>
     <%= javascript_include_tag "https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js", crossorigin: "anonymous" %>
-    <%= javascript_include_tag "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js", crossorigin: "anonymous" %>
     <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-   
-
-    
-
-   
-    
+    <%= csp_meta_tag %>         
   
     <p class="notice"><%= notice %></p>
     <p class="alert"><%= alert %></p>
@@ -30,11 +22,9 @@
   
     <%= render 'layouts/navbar' %>
     
-    <div class="content" style="padding-top: 60px;">
+    <div class="content" style="padding-top: 30px;">
 
     <%= yield %>
-
- 
  
 
   
