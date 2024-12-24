@@ -2,7 +2,7 @@
 
 import "@hotwired/turbo-rails"
 import "controllers"
-import $ from "jquery"
 import * as bootstrap from "bootstrap"
+
 
 
