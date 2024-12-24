@@ -1,3 +1,4 @@
+
 <nav class="navbar navbar-dark navbar-expand bg-dark fixed-top" style="z-index: 1050">
   <div class="container-fluid">
     <a class="navbar-brand" href="<%= root_path %>">Home</a>
@@ -20,6 +21,7 @@
               <%= link_to 'Show Students', show_students_teacher_path(current_teacher), class: 'nav-link' %>
             <% end %>
           </li>
+          
 
           <!-- Trees Dropdown (visible if teacher signed in) -->
           <% if teacher_signed_in? %>
@@ -38,14 +40,14 @@
           <!-- Teacher Logout Button (visible if teacher signed in) -->
           <% if teacher_signed_in? %>
             <li class="nav-item">
-              <%= button_to "Teacher Logout", destroy_teacher_session_path, method: :delete, class: 'nav-link' %>
+              <%= button_to "Teacher Logout", destroy_teacher_session_path, method: :delete, class: 'btn btn-outline-danger nav-link', form_class: 'd-inline' %>
             </li>
           <% end %>
 
           <!-- Student Logout Button (visible if student signed in) -->
           <% if student_signed_in? %>
             <li class="nav-item">
-              <%= button_to "Student Logout", destroy_student_session_path, method: :delete, class: 'nav-link' %>
+              <%= button_to "Student Logout", destroy_student_session_path, method: :delete, class: 'btn btn-outline-danger nav-link', form_class: 'd-inline' %>
             </li>
           <% end %>
 
