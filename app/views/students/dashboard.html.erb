@@ -3,14 +3,47 @@
 <h2>Your Assigned Trees:</h2>
 
 <% if @assigned_trees.any? %>
-  <ul>
-    <% @assigned_trees.each do |tree| %>
-      <li>
-        <%= link_to tree.name, tree_student_view_path(tree.id) %> 
-      </li>
-    <% end %>
-  </ul>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Tree Name</th>
+        <th>Assessment Items</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @assigned_trees.each do |tree| %>
+        <tr>
+          <td><%= link_to tree.name, tree_student_view_path(tree.id) %></td>
+          <td>
+            <% if tree.assessment_items.any? %>
+              <ul>
+                <% tree.assessment_items.each do |item| %>
+                  <li>
+                    <%= item.name %> 
+                    <% if item.document.attached? %>
+                      <ul>
+                        <li>
+                          <%= link_to "Download Document", url_for(item.document), target: "_blank", rel: "noopener", class: "btn btn-link" %>
+                        </li>
+                      </ul>
+                    <% else %>
+                      <span>: No document attached</span>
+                    <% end %>
+                  </li>
+                <% end %>
+              </ul>
+            <% else %>
+              <span>No assessment items assigned</span>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 <% else %>
   <p>You have no assigned trees.</p>
 <% end %>
 
+<div class="mt-3">
+  <%= link_to "Update Password", edit_student_registration_path, class: "btn btn-primary" %>
+</div>

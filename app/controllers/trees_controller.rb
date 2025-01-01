@@ -32,10 +32,8 @@ class TreesController < ApplicationController
     @tree = Tree.find(params[:id])
     @branch = @tree.branches.build
     @branches = @tree.branches.includes(:blossoms)
-
     @assessment_items = @tree.assessment_items
     @assessment_item = AssessmentItem.new
-
   end
 
   # GET /trees/new

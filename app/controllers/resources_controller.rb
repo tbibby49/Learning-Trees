@@ -2,7 +2,7 @@ class ResourcesController < ApplicationController
   before_action :set_tree
   before_action :set_branch
   before_action :set_blossom
-  before_action :set_resource, only: [:show, :edit, :update, :destroy]  # Ensure :edit, :update, and :destroy are included
+  before_action :set_resource, only: [:show, :edit, :update, :destroy]
 
   def new
     @resource = @blossom.resources.build
@@ -47,8 +47,9 @@ class ResourcesController < ApplicationController
   end
 
   def destroy
-    @resource.destroy  # Destroy the resource
-    redirect_to edit_tree_branch_blossom_path(@blossom.branch, @branch.tree, @blossom), notice: 'Resource was successfully deleted.'
+    @resource = Resource.find(params[:id])
+    @resource.destroy
+    redirect_to [@tree, @branch, @blossom], notice: 'Resource was successfully deleted.'
   end
 
   private

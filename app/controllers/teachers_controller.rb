@@ -30,12 +30,31 @@ class TeachersController < ApplicationController
   end
 
   def update_class_id
-    @student = Student.find(params[:student_email])
+    @student = Student.find_by(email: params[:student_email]) # Find by email
+    if @student.nil?
+      redirect_to show_students_teacher_path, alert: 'Student not found.'
+      return
+    end
+
     if @student.update(class_id: params[:class_id])
       redirect_to show_students_teacher_path(current_teacher), notice: 'Class ID was successfully updated.'
     else
-      redirect_to show_students_teacher_path, alert: 'There was an error updating the class ID.'
+      redirect_to show_students_teacher_path(current_teacher), alert: 'There was an error updating the Class ID.'
     end
+  end
+
+  def reset_password
+    student = Student.find(params[:student_id])
+    new_password = SecureRandom.alphanumeric(8) # Generate a random password
+
+    if student.update(password: new_password)
+      flash[:notice] = "Password reset successfully. New password: #{new_password}"
+    else
+      flash[:alert] = "Failed to reset the password."
+    end
+
+    redirect_to show_students_teacher_path # Ensure you redirect to the appropriate page
+
   end
 
   private

@@ -16,4 +16,8 @@ class AssessmentItem < ApplicationRecord
     self.order ||= tree.assessment_items.maximum(:order).to_i + 1
   end
 
+  def purge_document
+    document.purge if document.attached?
+  end
+
 end

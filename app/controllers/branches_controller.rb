@@ -38,9 +38,6 @@ class BranchesController < ApplicationController
       end
     end
   end
-
-
-
   # PATCH/PUT /branches/1 or /branches/1.json
   def update
     respond_to do |format|

@@ -6,10 +6,7 @@
   <meta name="tree-id" content="<%= @tree.id %>">
 
   <title>Tree Show Page</title>
-
-  <!-- Include Bootstrap CSS -->
   
-
   <style>
     body, html {
       height: 100%;
@@ -26,23 +23,24 @@
 
     .tree-container {
       position: relative;
-      width: 1200px; /* Adjust as needed */
-      height: 600px; /* Adjust as needed */
-      background-image: url('/assets/tree.jpg');
-      background-size: 120%; /* Ensure the image covers the entire container */
-      background-position: center; /* Center the image */
-      background-repeat: no-repeat; /* No repeat */
+      width: 1000px; 
+      height: 600px; 
+      background-image: url('<%= asset_path("Untitled-4.svg") %>');
+
+      background-size: 215%; 
+      background-position: center; 
+      background-repeat: no-repeat; 
       display: flex;
       justify-content: center;
-      align-items: flex-end; /* Align blossoms to bottom of the container */
-      overflow: visible; /* Ensure no overflow from absolutely positioned blossoms */
-      border: 2px solid #333; /* Border style */
-      box-sizing: border-box; /* Include border in the width and height */
+      align-items: flex-end; 
+      overflow: visible; 
+      border: 2px solid #333; 
+      box-sizing: border-box; 
     }
 
     .blossom {
-      width: 30px; /* Adjust as needed */
-      height: 30px; /* Adjust as needed */
+      width: 20px; 
+      height: 20px; 
       background-color: transparent;
       border-radius: 50%;
       display: flex;
@@ -51,6 +49,12 @@
       align-items: center;
       justify-content: center;
       position: absolute;
+      opacity: .8;
+    }
+
+    .blossom.has-resources {
+      border: 4px solid #FFD700;  /* Solid gold border */
+      box-shadow: 0 0 10px 15px rgba(255, 215, 0, 0.5);  /* Soft gold shadow */
     }
 
     .blossom-tooltip {
@@ -69,11 +73,12 @@
       display: block;
     }
 
-    .branch-line {
-      stroke: gray;
-      stroke-width: 15;
+   .branch-line {
+      stroke: black;
+      stroke-opacity: .6;
+      stroke-width: 20;
       fill: none;
-      z-index: -1;
+      stroke-linejoin: round
     }
 
     .branch-tooltip-group {
@@ -86,7 +91,8 @@
   <div class="container">    
     <!-- .tree-container where blossoms will be positioned -->
     <div class="tree-container" id="tree-container">
-      <svg id="lines-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"></svg>
+      <svg id="lines-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;">      
+      </svg>
       <% placed_positions = [] %> <!-- Array to keep track of placed blossom positions -->
 
       <!-- Iterating over branches and their blossoms using Ruby -->
@@ -98,13 +104,20 @@
 
       <!-- Position column 0 blossoms centered horizontally -->
       <% columnZeroBlossoms.each_with_index do |blossom, blossom_index| %>
-        <% bottom_position = 50 %> <!-- Starting 100px from the bottom -->
-        <% left_position = (600 - totalWidth / 2) + blossom_index * 33 %> <!-- Centered horizontally within the 1000px container -->
+        <% bottom_position = 60 %> <!-- Starting 100px from the bottom -->
+        <% left_position = (500 - totalWidth / 2) + blossom_index * 33 %> <!-- Centered horizontally within the 1000px container -->
         <% placed_positions << {left: left_position, bottom: bottom_position, blossom: blossom} %>
-        <div class="blossom" 
+          <% if blossom.resources.any? %>
+            <% blossom_class = 'has-resources' %>
+          <% end %>
+
+          <div class="blossom <%= blossom_class %>"
           data-row="<%= blossom.row %>" 
           data-column="<%= blossom.column %>"
-          data-branch-name="<%= blossom.branch.name %>" 
+          data-branch-id="<%= blossom.branch.id %>"
+          data-blossom-id="<%= blossom.id %>"
+          data-branch-name="<%= blossom.branch.name %>"
+          data-resource-count="<%= blossom.resources.count %>" 
           style="bottom: <%= bottom_position %>px; left: <%= left_position %>px;">
           <div class="blossom-tooltip">
             <strong><%= blossom.name %></strong><br>
@@ -117,7 +130,7 @@
       <% otherBlossoms.each_with_index do |blossom, index| %>
         <% random_height = rand(85..100) %> <!-- Random height between 85 and 100px -->
         <% bottom_position = 100 + blossom.column * random_height %> <!-- Dynamic bottom position based on column with random height -->        
-        <% left_position = 10 + index * 30 %> <!-- Adjusted left position based on index, within 30px from the left -->
+        <% left_position = 10 + index * 25 %> <!-- Adjusted left position based on index, within 30px from the left -->
         <!-- Check for overlaps and adjust position -->
         <% loop do %>
           <% overlapping = placed_positions.any? do |pos| %>
@@ -128,12 +141,17 @@
         <% end %>
 
         <% placed_positions << {left: left_position, bottom: bottom_position, blossom: blossom} %>
-        <div class="blossom" 
+          <% if blossom.resources.any? %>
+              <% blossom_class = 'has-resources' %>
+          <% end %>
+
+        <div class="blossom <%= blossom_class %>"
             data-row="<%= blossom.row %>" 
             data-column="<%= blossom.column %>" 
             data-branch-id="<%= blossom.branch.id %>"   
             data-blossom-id="<%= blossom.id %>"        
             data-branch-name="<%= blossom.branch.name %>" 
+            data-resource-count="<%= blossom.resources.count %>" 
             style="bottom: <%= bottom_position %>px; left: <%= left_position %>px;">
           <div class="blossom-tooltip">
             <strong><%= blossom.name %></strong><br>
@@ -142,10 +160,8 @@
         </div>
       <% end %>
     </div>
-  </div> 
+  </div>    
   
-   
- 
   <script>
     document.addEventListener('turbo:load', () => {
       const blossoms = document.querySelectorAll('.blossom');
@@ -191,7 +207,6 @@
           });
 
           if (closestEndX !== null && closestEndY !== null) {
-            console.log(`Drawing line from (${startX}, ${startY}) to (${closestEndX}, ${closestEndY})`);
 
             const isCCurve = Math.random() > 0.5;
             const controlPoint1X = isCCurve ? (startX + closestEndX) / 2 : startX;
@@ -203,7 +218,6 @@
             const d = `M ${startX},${startY} C ${controlPoint1X},${controlPoint1Y} ${controlPoint2X},${controlPoint2Y} ${closestEndX},${closestEndY}`;
             path.setAttribute('d', d);
             path.setAttribute('class', 'branch-line');
-            path.setAttribute('data-branch-name', branchName);
             svg.appendChild(path);
 
             // Create a tooltip group (to group the text and its background)
@@ -223,6 +237,7 @@
             branchTooltip.setAttribute('x', (startX + closestEndX) / 2);
             branchTooltip.setAttribute('y', (startY + closestEndY) / 2);
             branchTooltip.setAttribute('fill', '#000'); // Black text
+            branchTooltip.setAttribute('background', '#333');
             branchTooltip.setAttribute('font-size', '12');
             branchTooltip.setAttribute('text-anchor', 'middle');
             branchTooltip.setAttribute('dominant-baseline', 'middle');
@@ -275,9 +290,7 @@
         });
       });
     });
-
   </script>
-
 
 </body>
 </html>

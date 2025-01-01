@@ -20,10 +20,49 @@
   <% @assessment_items.order(:order).each do |assessment_item| %>
     <li class="assessment_item list-group-item d-flex justify-content-between align-items-center" data-id="<%= assessment_item.id %>" draggable="true">
       <span><%= "#{assessment_item.order}. #{assessment_item.name}" %></span>
-      <%= button_to 'Delete', tree_assessment_item_path(assessment_item, tree_id: @tree.id), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-sm btn-danger' %>
-    </li>
+      
+      <% if assessment_item.document.attached? %>
+        <div>
+          <strong>Document:</strong>
+          <%= link_to 'Download', url_for(assessment_item.document), target: '_blank' %>
+          <%= button_to 'Delete Document', delete_document_tree_assessment_item_path(assessment_item, tree_id: @tree.id), method: :delete, class: 'btn btn-sm btn-danger', data: { confirm: 'Are you sure you want to delete this document?' } %>
+        </div>
+
+      <% else %>
+        <%= form_for @assessment_item, url: upload_document_tree_assessment_item_path(@tree, assessment_item), html: { multipart: true, class: 'form-inline' } do |f| %>
+          <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal_<%= assessment_item.id %>">
+          Upload Document
+        </button>
+      <% end %>        
+  <% end %>
+      <%= button_to 'Delete Assessment Item', tree_assessment_item_path(assessment_item, tree_id: @tree.id), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-sm btn-danger' %>   </li>   
+      <div class="modal fade" id="uploadModal_<%= assessment_item.id %>" tabindex="-1" aria-labelledby="uploadModalLabel_<%= assessment_item.id %>" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <%= form_for @assessment_item, url: upload_document_tree_assessment_item_path(@tree, assessment_item), html: { multipart: true } do |f| %>
+                <div class="modal-header">
+                  <h5 class="modal-title" id="uploadModalLabel_<%= assessment_item.id %>">Upload Document for <%= assessment_item.name %></h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-group">
+                    <%= f.label :document, 'Select Document' %>
+                    <%= f.file_field :document, class: 'form-control-file' %>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <%= f.submit 'Upload', class: 'btn btn-primary' %>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+  </li>   
   <% end %>
 </ul>
+
+
 
 <script>
   document.addEventListener('turbo:load', () => {
@@ -97,3 +136,4 @@
   }
   });
 </script>
+

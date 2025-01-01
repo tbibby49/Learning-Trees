@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       get 'edit_students'
     end
     get 'marking_page', to: 'teachers#marking_page'
+    post 'reset_password', on: :collection
   end
 
   resources :students do
@@ -72,6 +73,10 @@ Rails.application.routes.draw do
 
     resources :assessment_items do
       patch :update_order, on: :collection
+      member do
+        delete :delete_document
+        post :upload_document
+      end
     end
 
     resources :branches do
@@ -79,7 +84,7 @@ Rails.application.routes.draw do
         collection do
           patch :update_positions
         end
-        resources :resources
+        resources :resources, only: [:create, :show, :edit, :update, :destroy]
       end
     end
 

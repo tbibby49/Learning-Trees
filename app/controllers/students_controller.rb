@@ -11,7 +11,7 @@ class StudentsController < ApplicationController
 
   def dashboard
     @student = current_student
-    @assigned_trees = @student.trees # Retrieves all trees assigned to the current student
+    @assigned_trees = current_student.trees.includes(assessment_items: { document_attachment: :blob })
 
   end
 

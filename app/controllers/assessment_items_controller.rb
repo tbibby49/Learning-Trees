@@ -19,7 +19,7 @@ class AssessmentItemsController < ApplicationController
     Rails.logger.debug "Tree ID: #{@tree.id}"
 
     if @assessment_item.save
-      redirect_to tree_assessment_item_path(@tree), notice: 'Assessment item was successfully created.'
+      redirect_to tree_assessment_items_path(@tree), notice: 'Assessment item was successfully created.'
     else
       Rails.logger.error "Errors: #{@assessment_item.errors.full_messages}"
       @assessment_items = @tree.assessment_items
@@ -28,8 +28,19 @@ class AssessmentItemsController < ApplicationController
   end
 
   def destroy
-    @assessment_item.destroy!
-    redirect_to tree_path(@tree), notice: 'Assessment item was successfully deleted.'
+    @assessment_item = @tree.assessment_items.find(params[:id])
+
+    # Check for associated BlossomAssessment records
+    associated_assessments = BlossomAssessment.where(assessment_item_id: @assessment_item.id)
+
+    if associated_assessments.exists?
+      flash[:alert] = "Cannot delete assessment item because associated assessments exist."
+      redirect_to assessments_tree_path(@tree) # Redirect to the same page (index for the tree's assessment items)
+    else
+      @assessment_item.destroy
+      flash[:notice] = "Assessment item deleted successfully."
+      redirect_to tree_assessment_items_path(@tree) # Redirect to the same page after deletion
+    end
   end
 
   def update_order
@@ -39,6 +50,29 @@ class AssessmentItemsController < ApplicationController
       assessment_item.update(order: item[:order]) # Update each assessment item's order
     end
     render json: { status: 'success' }
+  end
+
+  def upload_document
+    @assessment_item = @tree.assessment_items.find(params[:id])
+
+    if @assessment_item.update(document: params[:assessment_item][:document])
+      flash[:notice] = "Document uploaded successfully."
+    else
+      flash[:alert] = "Failed to upload document."
+    end
+    redirect_to tree_assessment_items_path(@tree)
+  end
+
+  def delete_document
+    @assessment_item = @tree.assessment_items.find(params[:id])
+
+    if @assessment_item.document.attached?
+      @assessment_item.document.purge # Remove the attached document
+      flash[:notice] = "Document deleted successfully."
+    else
+      flash[:alert] = "No document to delete."
+    end
+    redirect_to tree_assessment_items_path(@tree) # Redirect back to the same page
   end
 
   private

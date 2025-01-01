@@ -1,3 +1,13 @@
+<% if flash[:notice] %>
+  <div class="alert alert-success">
+    <%= flash[:notice] %>
+  </div>
+<% elsif flash[:alert] %>
+  <div class="alert alert-danger">
+    <%= flash[:alert] %>
+  </div>
+<% end %>
+
 <h1>Students</h1>
 
 <table class="table">
@@ -6,7 +16,7 @@
       <th>Email</th>
       <th>Class ID</th>
       <th>Assigned Trees</th>
-      <th>Actions</th>
+      <th>Add/Edit Class</th>
     </tr>
   </thead>
   <tbody>
@@ -14,6 +24,9 @@
       <tr>
         <td><%= student.email %></td>
         <td><%= student.class_id %></td>
+        <td>
+        <%= button_to "Reset Password", reset_password_teachers_path(student_id: student.id), method: :post, class: "btn btn-warning btn-sm" %>
+      </td>
         <td>
           <% if student.trees.any? %>
             <ul>
@@ -32,6 +45,8 @@
         <td>
           <%= form_with url: update_class_id_teachers_path(student_id: student.id), method: :post, local: true do |f| %>
             <div class="input-group">
+              <%= f.hidden_field :student_email, value: student.email %> <!-- Pass email -->
+
               <%= f.text_field :class_id, value: student.class_id, placeholder: "Enter Class ID", class: "form-control" %>
               <%= f.submit "Update", class: "btn btn-primary" %>
             </div>
