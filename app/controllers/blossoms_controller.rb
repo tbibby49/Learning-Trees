@@ -32,7 +32,7 @@ class BlossomsController < ApplicationController
       blossom = Blossom.find(blossom_id)
       if blossom
         blossom.update(row: position[:row], column: position[:column])
-        logger.debug "Updating blossom #{blossom_id} to row #{position[:row]}, column #{position[:column]}"
+
       else
         logger.debug "Updated position not persisting"
       end

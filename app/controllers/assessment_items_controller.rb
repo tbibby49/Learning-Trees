@@ -29,10 +29,8 @@ class AssessmentItemsController < ApplicationController
 
   def destroy
     @assessment_item = @tree.assessment_items.find(params[:id])
-
     # Check for associated BlossomAssessment records
     associated_assessments = BlossomAssessment.where(assessment_item_id: @assessment_item.id)
-
     if associated_assessments.exists?
       flash[:alert] = "Cannot delete assessment item because associated assessments exist."
       redirect_to assessments_tree_path(@tree) # Redirect to the same page (index for the tree's assessment items)

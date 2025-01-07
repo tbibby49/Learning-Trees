@@ -75,7 +75,7 @@
 
    .branch-line {
       stroke: black;
-      stroke-opacity: .6;
+      stroke-opacity: 1;
       stroke-width: 20;
       fill: none;
       stroke-linejoin: round
@@ -100,12 +100,12 @@
       <% otherBlossoms = @branches.flat_map { |b| b.blossoms }.reject { |blossom| blossom.column == 0 } %>
 
       <!-- Calculate total width needed for column 0 blossoms -->
-      <% totalWidth = columnZeroBlossoms.size * 30 + (columnZeroBlossoms.size - 1) * 3 %> <!-- Each blossom is 30px wide with 3px spacing -->
+      <% totalWidth = columnZeroBlossoms.size * 20 + (columnZeroBlossoms.size - 1) * 3 %> <!-- Each blossom is 30px wide with 3px spacing -->
 
       <!-- Position column 0 blossoms centered horizontally -->
       <% columnZeroBlossoms.each_with_index do |blossom, blossom_index| %>
-        <% bottom_position = 60 %> <!-- Starting 100px from the bottom -->
-        <% left_position = (500 - totalWidth / 2) + blossom_index * 33 %> <!-- Centered horizontally within the 1000px container -->
+        <% bottom_position = rand(50..60) %> 
+        <% left_position = (475 - totalWidth / 2) + blossom_index * rand(40..50) %> <!-- Centered horizontally within the 1000px container -->
         <% placed_positions << {left: left_position, bottom: bottom_position, blossom: blossom} %>
           <% if blossom.resources.any? %>
             <% blossom_class = 'has-resources' %>
@@ -128,10 +128,31 @@
 
       <!-- Position other blossoms -->
       <% otherBlossoms.each_with_index do |blossom, index| %>
-        <% random_height = rand(85..100) %> <!-- Random height between 85 and 100px -->
-        <% bottom_position = 100 + blossom.column * random_height %> <!-- Dynamic bottom position based on column with random height -->        
-        <% left_position = 10 + index * 25 %> <!-- Adjusted left position based on index, within 30px from the left -->
-        <!-- Check for overlaps and adjust position -->
+        <% branch_count = @branches.size %> <!-- Number of branches -->
+        <% branch_count = 1 if branch_count.zero? %> <!-- Avoid division by zero -->
+        <% max_column = otherBlossoms.map(&:column).max || 1 %> <!-- Avoid division by zero -->
+        <% row_height = 560 / (max_column + 1) %> <!-- Adjust row height to fit within container -->
+
+        <% bottom_position = row_height * (blossom.column + 1) + rand(-10..10) %>
+        
+        <% container_width = 900 %> <!-- Adjust based on your actual container width -->
+        <% center_x = container_width / 2 %> <!-- Center of the container -->
+        
+        <!-- Adjust left position to center blossoms -->
+        <% total_blossoms = otherBlossoms.size %>
+        <% min_spacing = 5 %> <!-- Minimum spacing between blossoms -->
+        <% max_spacing = 35 %> <!-- Maximum spacing for larger gaps -->
+
+        <!-- Calculate spacing dynamically based on the container width and number of blossoms -->
+        <% spacing = [(container_width / (total_blossoms + 1)), max_spacing].min %>
+        <% spacing = [spacing, min_spacing].max %> <!-- Ensure it doesn't go below min_spacing -->
+
+        <!-- Calculate the starting position to center blossoms -->
+        <% total_width = (total_blossoms - 1) * spacing %>
+        <% start_position = center_x - (total_width / 2) %>
+
+        <% left_position = start_position + (index * spacing) %>
+
         <% loop do %>
           <% overlapping = placed_positions.any? do |pos| %>
             <% (left_position - pos[:left]).abs < 33 && (bottom_position - pos[:bottom]).abs < 33 %>

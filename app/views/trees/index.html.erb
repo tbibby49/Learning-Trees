@@ -40,8 +40,9 @@
                  <li><%= teacher.email %>
                 <%= button_to "Unshare", unshare_tree_path(tree, teacher_id: teacher.id), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-outline-success" %>             
               <% end %></h6>
-            </div>                              
-            </div>        
+            </div>
+            <%= link_to "Edit tree", edit_tree_path(tree), class: "btn btn-outline-secondary" %></h2>                              
+            </div>       
           <% end %>
         </div>
     </div>

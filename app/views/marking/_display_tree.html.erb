@@ -85,7 +85,7 @@
 
     .branch-line {
       stroke: black;
-      stroke-opacity: .6;
+      stroke-opacity: 1;
       stroke-width: 20;
       fill: none;
       stroke-linejoin: round
@@ -136,8 +136,8 @@
 
       <!-- Position column 0 blossoms centered horizontally -->
       <% columnZeroBlossoms.each_with_index do |blossom, blossom_index| %>
-        <% bottom_position = 60 %> 
-        <% left_position = (500 - totalWidth / 2) + blossom_index * 33 %> <!-- Centered horizontally within the 1000px container -->
+        <% bottom_position = rand(50..60) %>
+        <% left_position = (475 - totalWidth / 2) + blossom_index * 33 %> <!-- Centered horizontally within the 1000px container -->
         <% placed_positions << {left: left_position, bottom: bottom_position, blossom: blossom} %>
         <% stage = @blossom_stages[blossom.id] %>
         <% sphere_class = 'blossom' %>
@@ -162,11 +162,30 @@
 
       <!-- Position other blossoms -->
       <% otherBlossoms.each_with_index do |blossom, index| %>
-        <% random_height = rand(85..100) %> <!-- Random height between 85 and 100px -->
-        <% bottom_position = 100 + blossom.column * random_height %> <!-- Dynamic bottom position based on column with random height -->
-        
-        <% left_position = 10 + index * 25 %> <!-- Adjusted left position based on index, within 30px from the left -->
+        <% branch_count = @branches.size %> <!-- Number of branches -->
+        <% branch_count = 1 if branch_count.zero? %> <!-- Avoid division by zero -->
+        <% max_column = otherBlossoms.map(&:column).max || 1 %> <!-- Avoid division by zero -->
+        <% row_height = 560 / (max_column + 1) %> <!-- Adjust row height to fit within container -->
 
+        <% bottom_position = row_height * (blossom.column + 1) + rand(-10..10) %>
+        
+        <% container_width = 900 %> <!-- Adjust based on your actual container width -->
+        <% center_x = container_width / 2 %> <!-- Center of the container -->
+        
+        <!-- Adjust left position to center blossoms -->
+        <% total_blossoms = otherBlossoms.size %>
+        <% min_spacing = 5 %> <!-- Minimum spacing between blossoms -->
+        <% max_spacing = 35 %> <!-- Maximum spacing for larger gaps -->
+
+        <!-- Calculate spacing dynamically based on the container width and number of blossoms -->
+        <% spacing = [(container_width / (total_blossoms + 1)), max_spacing].min %>
+        <% spacing = [spacing, min_spacing].max %> <!-- Ensure it doesn't go below min_spacing -->
+
+        <!-- Calculate the starting position to center blossoms -->
+        <% total_width = (total_blossoms - 1) * spacing %>
+        <% start_position = center_x - (total_width / 2) %>
+
+        <% left_position = start_position + (index * spacing) %>
         <!-- Check for overlaps and adjust position -->
         <% loop do %>
           <% overlapping = placed_positions.any? do |pos| %>

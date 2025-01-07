@@ -53,11 +53,16 @@ class BranchesController < ApplicationController
 
   # DELETE /branches/1 or /branches/1.json
   def destroy
-    @branch.destroy!
+    associated_blossoms = @branch.blossoms
+    associated_assessments = BlossomAssessment.where(blossom_id: associated_blossoms.pluck(:id))
 
-    respond_to do |format|
-      format.html { redirect_to tree_path(@tree), notice: "Branch was successfully destroyed." }
-      format.json { head :no_content }
+    if associated_assessments.exists?
+      flash[:alert] = "Cannot delete branch because associated assessments exist."
+      redirect_to assessments_tree_path(@tree) # Redirect to the tree page
+    else
+      @branch.destroy
+      flash[:notice] = "Branch deleted successfully."
+      redirect_to tree_path(@tree) # Redirect to the tree page after deletion
     end
   end
 

@@ -81,7 +81,6 @@ class TreesController < ApplicationController
     # Check for associated BlossomAssessment records
     associated_assessments = BlossomAssessment.joins(:branch)
                                                .where(branches: { tree_id: @tree.id })
-
     if associated_assessments.exists?
       flash[:alert] = "Cannot delete tree because associated assessments exist."
       redirect_to assessments_tree_path(@tree) # Redirect to a custom page
@@ -95,16 +94,13 @@ class TreesController < ApplicationController
   def update_cutoffs
     @tree = Tree.find(params[:id])
 
-    # Extract the cutoffs from the form
     cutoff_a = params[:cutoff_a].to_i
     cutoff_b = params[:cutoff_b].to_i
     cutoff_c = params[:cutoff_c].to_i
     cutoff_d = params[:cutoff_d].to_i
 
-    # Save these cutoffs (you'll likely want to store them somewhere like a model)
     @tree.update(cutoff_a: cutoff_a, cutoff_b: cutoff_b, cutoff_c: cutoff_c, cutoff_d: cutoff_d)
 
-    # Redirect or render as needed
     redirect_to @tree, notice: "Grade cutoffs have been updated."
   end
 
