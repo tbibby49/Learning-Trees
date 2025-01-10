@@ -8,26 +8,24 @@
   <div class="collapse" id="collapse_<%= branch.id %>">
     <div class="card card-body">
       <strong>Description:</strong>
-      <h6><%= branch.description %></h6>
-     
-      <br>
-      
+      <h6><%= branch.description %></h6>     
+      <div>
+        <% if branch.persisted? %>
+          <%= link_to "Edit branch name/description", edit_tree_branch_path(branch.tree, branch), class: "btn btn-outline-dark btn-sm" %> 
+        <% end %>  
+      </div>
 
        <% if branch.persisted? %>
         <div class="d-grid gap-2">
-          <%= link_to "Build & Modify branch", tree_branch_path(branch.tree, branch), class: "btn btn-outline-primary btn-lg" %>
-          
+          <%= link_to "Build & Modify branch", tree_branch_path(branch.tree, branch), class: "btn btn-outline-primary" %>      
+        <% end %>
         </div>
-      <% end %>
+      </div>
 
-      <% if branch.persisted? %>
-        <div class="d-grid gap-2">
-          <%= link_to "Edit branch name/description", edit_tree_branch_path(branch.tree, branch), class: "btn btn-outline-primary btn-lg" %> 
-        </div>
-      <% end %>   
+       
       
       <% if branch.persisted? %>
-        <%= button_to "Destroy branch", tree_branch_path(branch.tree, branch), method: :delete %>
+        <%= button_to "Destroy branch", tree_branch_path(branch.tree, branch), method: :delete, class: "btn btn-outline-danger btn-sm" %>
       <% end %>
 
     </div>

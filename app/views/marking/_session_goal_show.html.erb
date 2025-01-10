@@ -63,7 +63,7 @@
   </script>
 </head>
 
-<% if goals.any? %> <!-- Replace @goals with goals -->
+<% if goals.any? %> 
   <div class="card" style="width: 18rem;">
     <div class="card-header">
     </div>
@@ -99,5 +99,9 @@
     </ul>
   </div>
 <% else %>
+<div class="card" style="width: 18rem;">
+    <div class="card-header">
   <p>No session goals have been set yet.</p>
+</div>
+  </div>
 <% end %>

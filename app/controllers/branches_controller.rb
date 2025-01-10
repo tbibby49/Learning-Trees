@@ -42,7 +42,7 @@ class BranchesController < ApplicationController
   def update
     respond_to do |format|
       if @branch.update(branch_params)
-        format.html { redirect_to tree_branch_url(@tree, @branch), notice: "Branch was successfully updated." }
+        format.html { redirect_to tree_path(@tree), notice: "Branch was successfully updated." }
         format.json { render :show, status: :ok, location: @branch }
       else
         format.html { render :edit, status: :unprocessable_entity }

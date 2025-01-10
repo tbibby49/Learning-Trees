@@ -71,7 +71,8 @@ class BlossomsController < ApplicationController
   def update
     respond_to do |format|
       if @blossom.update(blossom_params)
-        format.html { redirect_to tree_branch_path(@branch.tree, @branch), notice: 'Blossom was successfully updated.' }
+        redirect_path = params[:redirect_to].presence || tree_branch_path(@branch.tree, @branch)
+        format.html { redirect_to redirect_path, notice: 'Blossom was successfully updated.' }
         format.json { render :show, status: :ok, location: @blossom }
       else
         format.html { render :edit, status: :unprocessable_entity }

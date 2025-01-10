@@ -100,12 +100,12 @@
       <% otherBlossoms = @branches.flat_map { |b| b.blossoms }.reject { |blossom| blossom.column == 0 } %>
 
       <!-- Calculate total width needed for column 0 blossoms -->
-      <% totalWidth = columnZeroBlossoms.size * 20 + (columnZeroBlossoms.size - 1) * 3 %> <!-- Each blossom is 30px wide with 3px spacing -->
+      <% totalWidth = columnZeroBlossoms.size * 20 + (columnZeroBlossoms.size - 1) * 3 %> 
 
       <!-- Position column 0 blossoms centered horizontally -->
       <% columnZeroBlossoms.each_with_index do |blossom, blossom_index| %>
         <% bottom_position = rand(50..60) %> 
-        <% left_position = (475 - totalWidth / 2) + blossom_index * rand(40..50) %> <!-- Centered horizontally within the 1000px container -->
+        <% left_position = (500 - totalWidth / 2) + blossom_index * 33 %><!-- Centered horizontally within the 1000px container -->
         <% placed_positions << {left: left_position, bottom: bottom_position, blossom: blossom} %>
           <% if blossom.resources.any? %>
             <% blossom_class = 'has-resources' %>

@@ -122,10 +122,13 @@
     </style>
 </head>
 
+<%= link_to "Back to #{@tree.name}", tree_path(@tree), class: 'btn btn-success' %>
+
 <body>
   <p style="color: green"><%= notice %></p>
   <div>
     <%= render @branch %>
+
   </div>
 
   <!-- Add a form to create a new blossom -->

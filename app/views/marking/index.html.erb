@@ -47,7 +47,7 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <% branch.blossoms.each do |blossom| %>
+              <% branch.blossoms.order(:column).each do |blossom| %>
                 <div class="card mb-3">
                   <div class="card-body">
                     <h5 class="card-title"><%= blossom.name %></h5>
