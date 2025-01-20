@@ -229,6 +229,13 @@ end
     end
   end
 
+  def printable_marking_grid
+    @tree = Tree.find(params[:id])
+    @students = @tree.students
+    @branches = @tree.branches.includes(:blossoms)
+
+  end
+
 
   private
     # Use callbacks to share common setup or constraints between actions.

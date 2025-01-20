@@ -30,8 +30,15 @@ class MarkingController < ApplicationController
 
     if @student && @assessment_item
       @blossom_assessments = BlossomAssessment.where(student_id: @student.id, assessment_item_id: @assessment_item.id)
+
+       # Calculate the running total for stages
+      @stage_totals = @blossom_assessments.group_by(&:stage).transform_values(&:count)
+      @total_stages = @blossom_assessments.count
     else
-      @blossom_assessments = BlossomAssessment.all
+      @blossom_assessments = []
+      @blossom_stages = {}
+      @stage_totals = {}
+      @total_stages = 0
     end
   end
 

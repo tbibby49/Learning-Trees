@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Printable Marking Grid</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .page-title {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .student-container {
+      border: 1px solid #000;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .student-name {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .branches-grid {
+      margin-bottom: 20px;
+    }
+    .branch-section h7 {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    .blossoms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 5px;
+    }
+    
+    .blossom-tile {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 5px;
+      text-align: center;
+      font-size: clamp(8px, 2vw, 10px); /* Font size that adjusts with a minimum and maximum */
+      line-height: 1.2;
+      overflow: hidden;
+      white-space: nowrap; /* Prevent text wrapping */
+      text-overflow: ellipsis; /* Truncate text with ellipsis */
+      display: flex; /* Enable flexbox */
+      flex-direction: column; /* Stack elements vertically */
+      justify-content: space-between; /* Space elements between top and bottom */
+      height: 100%; /* Ensure tile height stretches to fit content */
+    }
+
+    .blossom-title {
+      font-weight: bold;
+      white-space: normal; /* Allow text to wrap to a new line */
+      overflow: hidden; /* Hide the overflow text */
+      text-overflow: ellipsis; /* Apply ellipses when text overflows */
+      display: -webkit-box; /* Use flexbox to handle wrapping */
+      -webkit-line-clamp: 2; /* Limit the text to 2 lines */
+      -webkit-box-orient: vertical; /* Set the box orientation to vertical*/ 
+    }
+
+    .checkbox-container {
+      display: flex;
+      justify-content: center; /* Center the checkboxes horizontally */
+      align-items: flex-end; /* Push checkboxes to the bottom */
+      gap: 5px; /* Space between checkboxes */
+    }
+
+    .checkbox-container label {
+      display: inline-flex;
+      font-size: 8px; /* Adjust label font size */
+      margin: 0 5px; /* Space between the checkboxes */
+      align-items: center;
+    }
+
+    .checkbox-container .checkbox {
+      width: 5px; /* Size of the square */
+      height: 5px; /* Size of the square */
+      border: 1px solid #000; /* Border for the square */
+      display: inline-block;
+      background-color: white; /* Background color of the square */
+    }
+
+    @media print {
+      .navbar, .footer {
+        display: none; /* Hide navbar and footer */
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      .student-container, .branch-section {
+        page-break-inside: avoid; /* Prevent breaking inside these containers */
+        page-break-before: auto; /* Allow breaking before if needed */
+      }
+
+      .blossom-tile {
+        page-break-inside: avoid;
+      }
+
+      /* Ensure content fits within the page */
+      .blossoms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 5px;
+        page-break-inside: avoid;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="page-title">
+    <h6>Tree: <%= @tree.name %></h6>
+  </div>
+
+  <div class="student-list"> 
+    <% @students.each do |student| %>
+      <div class="student-container">
+        <div class="student-name"><%= student.email %></div>
+        
+        <div class="branches-grid">
+          <% @branches.each do |branch| %>
+            <div class="branch-section">
+              <h7><%= branch.name %></h7>
+              <div class="blossoms-grid">
+                <% branch.blossoms.each do |blossom| %>
+                  <div class="blossom-tile">
+                    <div class="blossom-title"><%= blossom.name %></div>
+                    <div class="checkboxes">
+                      <label>
+                        <input type="checkbox" name="blossom_<%= blossom.id %>_partially_demonstrated">
+                        Partial
+                      </label>
+                      <label>
+                        <input type="checkbox" name="blossom_<%= blossom.id %>_fully_demonstrated">
+                        Full
+                      </label>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="no-print">
+    <button onclick="window.print()">Print</button>
+  </div>
+</body>
+</html>

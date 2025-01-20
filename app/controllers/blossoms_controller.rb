@@ -83,14 +83,16 @@ class BlossomsController < ApplicationController
 
   # DELETE /blossoms/1 or /blossoms/1.json
   def destroy
-    @tree = Tree.find(params[:tree_id])
-    @branch = @tree.branches.find(params[:branch_id])
-    @blossom = @branch.blossoms.find(params[:id])
-    @blossom.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to tree_branch_path(@branch.tree, @branch), notice: "Blossom was successfully destroyed." }
-      format.json { head :no_content }
+    associated_assessments = BlossomAssessment.where(blossom_id: @blossom.id)
+    if associated_assessments.exists?
+      flash[:alert] = "Cannot delete blossom because associated assessments exist."
+      redirect_to assessments_tree_path(@tree) # Redirect to the same page (index for the tree's assessment items)
+    else
+      @blossom.destroy # Only delete if no associated assessments
+      respond_to do |format|
+        format.html { redirect_to tree_branch_path(@branch.tree, @branch), notice: "Blossom was successfully destroyed." }
+        format.json { head :no_content }
+      end
     end
   end
 

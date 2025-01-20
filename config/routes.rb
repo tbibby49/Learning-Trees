@@ -43,6 +43,7 @@ Rails.application.routes.draw do
       post :create_cloned_tree
     end
 
+
     member do
       post 'marking/get_stage_data', to: 'marking#get_stage_data'
     end
@@ -50,6 +51,10 @@ Rails.application.routes.draw do
     member do
       get :assessments
       delete :clear_assessments
+    end
+
+    member do
+      get 'printable_marking_grid'
     end
 
     post 'assign_student', on: :member, to: 'trees#assign_tree_to_student'
@@ -70,6 +75,7 @@ Rails.application.routes.draw do
     get '/marking/student_view', to: 'marking#student_view', as: 'student_view'
 
     post 'marking/save_branch_blossom_stages', to: 'marking#save_branch_blossom_stages'
+
 
     resources :assessment_items do
       patch :update_order, on: :collection
