@@ -242,10 +242,10 @@ end
     @blossoms_by_branch = @branches.each_with_object({}) do |branch, hash|
       hash[branch] = branch.blossoms.order(:column)
     end
-    @blossoms = Blossom.includes(:branch).order(:branch_id, :column)  # Sort by branch first, then column
+    @blossoms = Blossom.includes(:branch).where(branch: { tree_id: @tree.id }).order(:branch_id, :column)
 
     @assessment_items = AssessmentItem.all
-    @assessment_items = AssessmentItem.order(:order)  # Sorting by order value
+    @assessment_items = @tree.assessment_items.order(:order)
 
     @cutoff_a = @tree.cutoff_a
     @cutoff_b = @tree.cutoff_b
