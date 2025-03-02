@@ -7,6 +7,9 @@
 <%= link_to 'Go To Marking Page',tree_marking_path(@tree), class: 'btn btn-secondary' %>
 
 <%= link_to 'Printable Marking Grid', printable_marking_grid_tree_path(@tree), class: 'btn btn-warning' %>
+
+<%= link_to "Students Groups", filter_students_tree_path(@tree), class: "btn btn-dark " %>
+
  
 <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#assignTreeModal">
   Assign Tree to Student
@@ -215,8 +218,6 @@
     <%= flash[:success] %>
   </div>
 <% end %>
-
-
 
 
 

@@ -1,0 +1,227 @@
+<div class="container">
+<h1>Filter Students for <%= @tree.name %></h1>
+
+
+  <div class="row">
+    <!-- Dropdowns in a Card -->
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <%= form_with url: filter_students_tree_path(@tree), method: :get, local: true do |form| %>
+            
+            <div class="mb-3">              
+              <%= form.label :blossom_id, "Blossom:", class: "form-label fw-bold text-black" %>
+              <%= form.select :blossom_id, options_for_select(@blossoms.pluck(:name, :id), selected: params[:blossom_id]), prompt: "Select Blossom" %></li>
+            </div>
+
+            <!-- Blossom Stage Dropdown -->
+            <div class="mb-3">
+              <%= form.label :stage, "Blossom Stage:", class: "form-label fw-bold text-black" %>
+              <%= form.select :stage, options_for_select(
+                [["Not Evident"]] + 
+                BlossomAssessment.distinct.pluck(:stage).reject { |s| s.blank? || s == "Not Evident" }.map { |s| [s, s] }, 
+                selected: params[:stage]
+              ), 
+              prompt: "Select Stage", 
+              class: "form-select form-select-lg text-white bg-dark border-primary shadow" %>
+            </div>
+
+            <div class="mb-1">
+              <%= form.label :assessment_item_id, "Assessment Item:", class: "form-label" %>
+              <%= form.select :assessment_item_id, options_for_select(@assessment_items.pluck(:name, :id), selected: params[:assessment_item_id]), prompt: "Select Assessment", class: "form-select form-select-sm" %>
+            </div>
+             <!-- Branch Dropdown -->
+            <div class="mb-1">
+              <%= form.label :branch_id, "Branch:", class: "form-label" %>
+              <%= form.select :branch_id, options_for_select(@branches.pluck(:name, :id), selected: params[:branch_id]), prompt: "Select Branch", class: "form-select form-select-sm" %>
+            </div>                 
+             <!-- Class ID Dropdown -->
+            <div class="mb-1">
+              <%= form.label :class_id, "Class ID:", class: "form-label" %>
+              <%= form.select :class_id, options_for_select(Student.distinct.pluck(:class_id), selected: params[:class_id]), prompt: "Select Class", class: "form-select form-select-sm" %>
+            </div>
+            <!-- Submit Button -->
+            <div class="mb-1 text-center">
+              <%= form.submit "Filter", class: "btn btn-primary btn-sm w-100" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtered Students in a Card -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-primary">
+        <div class="card-body">
+          <h3>Filtered Students</h3>
+          
+          <!-- Display Sorting Criteria -->
+          <p class="text-muted">
+            Sorted by: 
+            <% selected_filters = [] %>
+
+            
+            <strong>
+              <% if params[:class_id].present? %>
+                <%= "Class ID: #{params[:class_id]}," %>
+              <% end %>
+
+              <% if params[:branch_id].present? %>
+                <%= "Branch: #{@branches.find(params[:branch_id].to_i).name}," %>
+              <% end %>
+
+              <% if params[:blossom_id].present? %>
+                <%= "Blossom: #{@blossoms.find(params[:blossom_id].to_i).name}," %>
+              <% end %>
+
+              <% if params[:assessment_item_id].present? %>
+                <%= "Assessment: #{@assessment_items.find(params[:assessment_item_id].to_i).name}" %>
+              <% end %>
+
+              <% if params[:stage].present? %>
+                <%= "Stage: #{params[:stage]}" %>
+              <% end %>
+            </strong>
+          </p>
+
+         <!-- Students WITH selected stage -->
+        <h4>Students with Stage: <%= params[:stage] %></h4>
+        <ul class="list-group">
+          <% if @students_with_stage.any? %>
+            <% @students_with_stage.each do |student| %>
+              <li class="list-group-item"><%= student.email %></li>
+            <% end %>
+          <% else %>
+            <li class="list-group-item text-muted">No students have this stage.</li>
+          <% end %>
+        </ul>
+
+        <!-- Students WITHOUT stage data -->
+<h4>Students without Stage Data</h4>
+<ul class="list-group">
+  <% if @students_without_stage.any? %>
+    <% @students_without_stage.each do |student| %>
+      <li class="list-group-item"><%= student.email %> (No Stage Set)</li>
+    <% end %>
+  <% else %>
+    <li class="list-group-item text-muted">All students have stage data.</li>
+  <% end %>
+</ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Display the table below -->
+<div class="col-md-12 mt-4">
+  <div class="table-responsive">
+    <table class="table table-bordered text-center">
+      <thead class="table-primary">
+        <tr>
+          <th>Student</th>
+          <th>Points Earned</th>  <!-- Move Points Earned Here -->
+          <th>Grade</th>           <!-- Move Grade Here -->
+          <% @blossoms.each do |blossom| %>
+            <th><%= blossom.name %></th>
+          <% end %>
+          <th>Points Possible</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @students.each do |student| %>
+          <% total_points_earned = 0 %>  
+          <% total_points_possible = 0 %>  
+
+          <!-- First, calculate total points before rendering -->
+          <% @blossoms.each do |blossom| %>
+            <% assessment = student.blossom_assessments.find_by(blossom: blossom) %>
+            <% points_earned = 0 %>  <!-- Initialize points earned for this blossom -->
+            <% points_possible = 2 %>  <!-- Points possible per blossom -->
+
+            <% case assessment&.stage %>
+              <% when "Fully Demonstrated" %>
+                <% points_earned = 2 %>
+              <% when "Partially Demonstrated" %>
+                <% points_earned = 1 %>
+              <% else %>
+                <% points_earned = 0 %>
+            <% end %>
+
+            <!-- Accumulate total points -->
+            <% total_points_earned += points_earned %>
+            <% total_points_possible += points_possible %>
+          <% end %>
+
+          <!-- Now render the table row -->
+          <tr>
+            <td><%= student.email %></td> 
+
+            <!-- Points Earned Column -->
+            <td><%= total_points_earned %></td>
+
+            <!-- Grade Calculation -->
+            <td>
+              <% grade = case total_points_earned
+                         when @cutoff_a..Float::INFINITY then "A"
+                         when @cutoff_b..@cutoff_a-1 then "B"
+                         when @cutoff_c..@cutoff_b-1 then "C"
+                         when @cutoff_d..@cutoff_c-1 then "D"
+                         else "E"
+                       end %>
+              <%= grade %>
+            </td>
+
+            <% @blossoms.each do |blossom| %>
+              <% assessment = student.blossom_assessments.find_by(blossom: blossom) %>
+
+              <td class="<%= 
+                case assessment&.stage
+                when "Fully Demonstrated"
+                  "stage-fully-demonstrated"
+                when "Partially Demonstrated"
+                  "stage-partially-demonstrated"
+                when "Not Evident"
+                  "stage-not-evident"
+                else
+                  "text-muted"
+                end
+              %>">
+                <% if assessment && assessment.stage.present? %>
+                  <%= assessment.stage %>
+                <% else %>
+                  <span class="text-muted">Not Assessed</span>
+                <% end %>
+              </td>
+            <% end %>
+
+            <!-- Points Possible Column -->
+            <td><%= total_points_possible %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+<style>
+  /* Fully Demonstrated Glow Effect */
+  .stage-fully-demonstrated {
+    color: blue; /* Text color */
+    text-shadow: 0 0 10px blue, 0 0 20px blue, 0 0 30px blue; /* Blue glow effect */
+  }
+
+  /* Partially Demonstrated Glow Effect */
+  .stage-partially-demonstrated {
+    color: green; /* Text color */
+    text-shadow: 0 0 10px green, 0 0 20px green, 0 0 30px green; /* Green glow effect */
+  }
+
+  /* Not Evident Glow Effect */
+  .stage-not-evident {
+    color: orange; /* Text color */
+    text-shadow: 0 0 10px orange, 0 0 20px orange, 0 0 30px orange; /* Orange glow effect */
+  }
+</style>
+

@@ -43,6 +43,7 @@ Rails.application.routes.draw do
       post :create_cloned_tree
     end
 
+    get 'filter_students', on: :member
 
     member do
       post 'marking/get_stage_data', to: 'marking#get_stage_data'

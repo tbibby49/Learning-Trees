@@ -236,6 +236,72 @@ end
 
   end
 
+  def filter_students
+    @tree = Tree.find(params[:id])
+    @branches = @tree.branches
+    @blossoms = Blossom.all
+    @assessment_items = AssessmentItem.all
+    @cutoff_a = @tree.cutoff_a
+    @cutoff_b = @tree.cutoff_b
+    @cutoff_c = @tree.cutoff_c
+    @cutoff_d = @tree.cutoff_d
+
+    # Start with all students
+    @students = Student.all
+
+    # Apply filters only if params are present
+    @students = @students.where(class_id: params[:class_id]) if params[:class_id].present?
+
+    if params[:branch_id].present?
+      @students = @students.joins(:blossom_assessments)
+                           .where(blossom_assessments: { blossom_id: Blossom.where(branch_id: params[:branch_id]) })
+                           .distinct
+    end
+
+    if params[:blossom_id].present?
+      @students = @students.joins(:blossom_assessments)
+                           .where(blossom_assessments: { blossom_id: params[:blossom_id] })
+                           .distinct
+    end
+
+    if params[:assessment_item_id].present?
+      @students = @students.joins(:blossom_assessments)
+                           .where(blossom_assessments: { assessment_item_id: params[:assessment_item_id] })
+                           .distinct
+    end
+
+    # Apply filtering by stage
+    if params[:stage].present?
+      # Students who have the selected stage for the given blossom
+      @students_with_stage = Student.joins(:blossom_assessments)
+                                    .where(blossom_assessments: { blossom_id: params[:blossom_id], stage: params[:stage] })
+                                    .distinct
+
+      # Students who have no data for the selected blossom
+      @students_without_stage = Student.left_joins(:blossom_assessments)
+                                       .where(blossom_assessments: { id: nil })
+                                       .or(Student.left_joins(:blossom_assessments)
+                                                 .where(blossom_assessments: { blossom_id: params[:blossom_id], stage: nil }))
+                                       .distinct
+    else
+      # If no stage is selected, just show students without data
+      @students_without_stage = Student.left_joins(:blossom_assessments)
+                                       .where(blossom_assessments: { stage: [nil, ""] })
+                                       .distinct
+      @students_with_stage = []
+    end
+
+
+    Rails.logger.debug "Filtered students SQL: #{@students.to_sql}"
+    Rails.logger.debug "Filtered students count: #{@students.count}"
+
+    # Render the filtered students and the page
+    respond_to do |format|
+      format.html
+    end
+  end
+
+
 
   private
     # Use callbacks to share common setup or constraints between actions.
