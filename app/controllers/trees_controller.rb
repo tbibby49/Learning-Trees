@@ -238,9 +238,14 @@ end
 
   def filter_students
     @tree = Tree.find(params[:id])
-    @branches = @tree.branches
+    @branches = @tree.branches.includes(:blossoms)
+    @blossoms_by_branch = @branches.each_with_object({}) do |branch, hash|
+      hash[branch] = branch.blossoms.order(:column)
+    end
     @blossoms = Blossom.all
     @assessment_items = AssessmentItem.all
+    @assessment_items = AssessmentItem.order(:order)  # Sorting by order value
+
     @cutoff_a = @tree.cutoff_a
     @cutoff_b = @tree.cutoff_b
     @cutoff_c = @tree.cutoff_c

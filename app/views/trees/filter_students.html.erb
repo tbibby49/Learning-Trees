@@ -117,16 +117,29 @@
   <div class="table-responsive">
     <table class="table table-bordered text-center">
       <thead class="table-primary">
-        <tr>
-          <th>Student</th>
-          <th>Points Earned</th>  <!-- Move Points Earned Here -->
-          <th>Grade</th>           <!-- Move Grade Here -->
-          <% @blossoms.each do |blossom| %>
-            <th><%= blossom.name %></th>
+         <tr>
+          <th rowspan="2">Student</th>
+          <th rowspan="2">Points Earned</th>
+          <th rowspan="2">Grade</th>
+          
+          <!-- Group Blossoms by Branch -->
+          <% grouped_blossoms = @blossoms.group_by(&:branch) %>
+          <% grouped_blossoms.each do |branch, blossoms| %>
+            <th colspan="<%= blossoms.count %>"><%= branch.name %></th>
           <% end %>
-          <th>Points Possible</th>
+
+          <th rowspan="2">Points Possible</th>
+        </tr>
+
+        <tr>
+          <% grouped_blossoms.each do |branch, blossoms| %>
+            <% blossoms.each do |blossom| %>
+              <th><%= blossom.name %></th>
+            <% end %>
+          <% end %>
         </tr>
       </thead>
+
       <tbody>
         <% @students.each do |student| %>
           <% total_points_earned = 0 %>  
@@ -225,3 +238,49 @@
   }
 </style>
 
+<div class="col-md-12 mt-4">
+  <div class="table-responsive">
+    <table class="table table-bordered text-center">
+      <thead class="table-primary">
+        <tr>
+          <th rowspan="2">Student</th>         
+          <!-- Display assessment items based on their order -->
+          <% @assessment_items.each do |assessment_item| %>
+            <th><%= assessment_item.name %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% @students.each do |student| %>
+          <% total_points_earned = 0 %>  
+          <tr>
+            <td><%= student.email %></td> 
+
+            <!-- Calculate total points earned and points possible -->
+            <% @assessment_items.each do |assessment_item| %>
+              <% points_earned = 0 %>  <!-- Initialize total points for this assessment item -->
+
+              <% student.blossom_assessments.where(assessment_item: assessment_item).each do |assessment| %>
+                <% case assessment.stage %>
+                  <% when "Fully Demonstrated" %>
+                    <% points_earned += 2 %>
+                  <% when "Partially Demonstrated" %>
+                    <% points_earned += 1 %>
+                  <% else %>
+                    <% points_earned += 0 %>
+                <% end %>
+              <% end %>
+
+              <!-- Display total points for this assessment item -->
+              <td><%= points_earned %></td>
+
+              <!-- Accumulate total points earned for the row -->
+              <% total_points_earned += points_earned %>
+            <% end %>
+
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
