@@ -242,7 +242,8 @@ end
     @blossoms_by_branch = @branches.each_with_object({}) do |branch, hash|
       hash[branch] = branch.blossoms.order(:column)
     end
-    @blossoms = Blossom.all
+    @blossoms = Blossom.includes(:branch).order(:branch_id, :column)  # Sort by branch first, then column
+
     @assessment_items = AssessmentItem.all
     @assessment_items = AssessmentItem.order(:order)  # Sorting by order value
 

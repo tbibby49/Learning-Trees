@@ -117,15 +117,16 @@
   <div class="table-responsive">
     <table class="table table-bordered text-center">
       <thead class="table-primary">
-         <tr>
+        <tr>
           <th rowspan="2">Student</th>
           <th rowspan="2">Points Earned</th>
           <th rowspan="2">Grade</th>
-          
+
           <!-- Group Blossoms by Branch -->
           <% grouped_blossoms = @blossoms.group_by(&:branch) %>
           <% grouped_blossoms.each do |branch, blossoms| %>
-            <th colspan="<%= blossoms.count %>"><%= branch.name %></th>
+            <% sorted_blossoms = blossoms.sort_by(&:column) %> <!-- Sort blossoms by column -->
+            <th colspan="<%= sorted_blossoms.count %>"><%= branch.name %></th>
           <% end %>
 
           <th rowspan="2">Points Possible</th>
@@ -133,12 +134,14 @@
 
         <tr>
           <% grouped_blossoms.each do |branch, blossoms| %>
-            <% blossoms.each do |blossom| %>
+            <% sorted_blossoms = blossoms.sort_by(&:column) %> <!-- Ensure sorting applies -->
+            <% sorted_blossoms.each do |blossom| %>
               <th><%= blossom.name %></th>
             <% end %>
           <% end %>
         </tr>
       </thead>
+
 
       <tbody>
         <% @students.each do |student| %>
@@ -216,28 +219,6 @@
   </div>
 </div>
 
-
-
-<style>
-  /* Fully Demonstrated Glow Effect */
-  .stage-fully-demonstrated {
-    color: blue; /* Text color */
-    text-shadow: 0 0 10px blue, 0 0 20px blue, 0 0 30px blue; /* Blue glow effect */
-  }
-
-  /* Partially Demonstrated Glow Effect */
-  .stage-partially-demonstrated {
-    color: green; /* Text color */
-    text-shadow: 0 0 10px green, 0 0 20px green, 0 0 30px green; /* Green glow effect */
-  }
-
-  /* Not Evident Glow Effect */
-  .stage-not-evident {
-    color: orange; /* Text color */
-    text-shadow: 0 0 10px orange, 0 0 20px orange, 0 0 30px orange; /* Orange glow effect */
-  }
-</style>
-
 <div class="col-md-12 mt-4">
   <div class="table-responsive">
     <table class="table table-bordered text-center">
@@ -284,3 +265,41 @@
     </table>
   </div>
 </div>
+
+<style>
+  /* Fully Demonstrated Glow Effect */
+  .stage-fully-demonstrated {
+    color: blue; /* Text color */
+    text-shadow: 0 0 10px blue, 0 0 20px blue, 0 0 30px blue; /* Blue glow effect */
+  }
+
+  /* Partially Demonstrated Glow Effect */
+  .stage-partially-demonstrated {
+    color: green; /* Text color */
+    text-shadow: 0 0 10px green, 0 0 20px green, 0 0 30px green; /* Green glow effect */
+  }
+
+  /* Not Evident Glow Effect */
+  .stage-not-evident {
+    color: orange; /* Text color */
+    text-shadow: 0 0 10px orange, 0 0 20px orange, 0 0 30px orange; /* Orange glow effect */
+  }
+    table {
+    
+    width: 100%;
+  }
+
+  th, td {
+    text-align: center;
+    padding: 8px;
+  }
+
+  /* Freezing the email column */
+  td:first-child, th:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #f8f9fa;  /* Optional: Background for better visibility */
+    z-index: 1; /* Make sure it stays above other columns */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Optional: Shadow effect for better visibility */
+  }
+</style>
