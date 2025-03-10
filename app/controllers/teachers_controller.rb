@@ -53,7 +53,7 @@ class TeachersController < ApplicationController
       flash[:alert] = "Failed to reset the password."
     end
 
-    redirect_to show_students_teacher_path # Ensure you redirect to the appropriate page
+    redirect_to show_students_teacher_path(current_teacher)
 
   end
 
